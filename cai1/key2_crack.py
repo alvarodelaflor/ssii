@@ -29,7 +29,7 @@ for pass1 in file_input:
             t_time = end - start
             print("\nPassword Found! Password Is : %s " % key)
             print("Total Running Time is :  ",t_time,"seconds (counter: " + str(counter) + ")" )
-            break
+            quit()
         counter += 1
 
 else:

@@ -5,7 +5,7 @@ import codecs
 counter = 1
 
 pass_user = input("Enter Your sha256 Pass : ")
-file_user = 'C:\\Users\\Alvaro\\Desktop\\ssii\\cai1\\dictionary\\english_common_word.txt'
+file_user = 'dictionary\\english_common_word.txt'
 
 try:
     file_input = open(file_user,"r")
