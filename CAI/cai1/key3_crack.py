@@ -9,7 +9,7 @@ counter = 1
 
 #Hash = dWwYYmszPa4xHOsLuVi3fvoBkcKdWJmGM5wmIN6K2x8=
 
-passwordIn = input("Enter Your md5 Pass : ")
+passwordIn = input("Enter Your sha Pass : ")
 
 perm_list = permutations(["r","a","f","a","e","l",
                          "c", "o", "n", "s", "e", "r", "y",
@@ -21,10 +21,10 @@ for perm_aux in perm_list:
     hash_obj = codecs.encode(codecs.decode(hashlib.sha256(password.encode('utf-8')).hexdigest(), 'hex'), 'base64').decode().replace('\n', '')
     start = time.time()
     counter += 1
-    end = time.time()
-    t_time = end - start
 
     if hash_obj == passwordIn:
+        end = time.time()
+        t_time = end - start
         print("\nPassword Found!!! Password Is : %s " % perm)
         print("Total Ruuning Time is :  ",t_time,"seconds")
         break

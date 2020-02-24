@@ -130,3 +130,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+/CAI/cai1/dictionary/rockyou.txt

@@ -27,7 +27,8 @@ for pass1 in file_input:
         if code_key == pass_user:
             end = time.time()
             t_time = end - start
-            print("\nPassword Found! Password Is : %s " % key)
+            password_simple = password + '.' + aux
+            print("\nPassword Found! Password Is : %s " % password_simple)
             print("Total Running Time is :  ",t_time,"seconds (counter: " + str(counter) + ")" )
             quit()
         counter += 1
