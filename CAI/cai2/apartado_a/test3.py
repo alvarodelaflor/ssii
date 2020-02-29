@@ -1,12 +1,14 @@
 import threading
  
-count = 0
+res = []
+i = 0
 
 def isPar():
-    global count
-    for i in range(500000):
+    global res, i
+    while i <= 500000:
         if(i%2 == 0):
-            count = count + 1
+            res.append(i)
+        i += 1
       
 def main():
     hilo_1 = threading.Thread(target= isPar)
@@ -18,5 +20,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-    print("Hay " + str(count) + " pares")
+    #print(res)
+    print("Hay: " + str(len(res)) + " números pares")
 
