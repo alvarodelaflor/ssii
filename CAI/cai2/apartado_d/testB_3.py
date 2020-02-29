@@ -1,38 +1,39 @@
-import multiprocessing
+from multiprocessing import Pipe, Process
 
 
-def sender(conn, msgs):
+def sender(pipe, messages):
     """
-    function to send messages to other end of pipe
+    function to send messages to the pipeline
     """
-    for msg in msgs:
-        conn.send(msg)
-        print("Sent the message: {}".format(msg))
-    conn.close()
+    for message in messages:
+        pipe.send(message)
+        print("Sent the message: {}".format(message))
+    pipe.close()
 
 
-def receiver(conn):
+def receiver(pipe):
     """
     function to print the messages received from other
     end of pipe
     """
-    while 1:
-        msg = conn.recv()
-        if msg == "END":
+    while True:
+        message = pipe.recv()
+        if message == "CLOSE PIPE":
             break
-        print("Received the message: {}".format(msg))
+        print("Received the message: {}".format(message))
 
 
 if __name__ == "__main__":
     # messages to be sent
-    msgs = ["hello", "hey", "hru?", "END"]
+    messages = ["Close the door", "Make an appointment with Rosario", "Completing the Workbook Exercises",
+                "Say hello to Juan Manuel", "CLOSE PIPE"]
 
     # creating a pipe
-    parent_conn, child_conn = multiprocessing.Pipe()
+    sender_pipe, receiver_pipe = Pipe()
 
     # creating new processes
-    p1 = multiprocessing.Process(target=sender, args=(parent_conn, msgs))
-    p2 = multiprocessing.Process(target=receiver, args=(child_conn,))
+    p1 = Process(target=sender, args=(sender_pipe, messages))
+    p2 = Process(target=receiver, args=(receiver_pipe,))
 
     # running processes
     p1.start()
