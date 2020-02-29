@@ -15,8 +15,8 @@ def main():
     hilo_2.start()
     hilo_1.join()
     hilo_2.join()
-    print("Hay " + str(count) + " pares")
 
 if __name__ == "__main__":
     main()
+    print("Hay " + str(count) + " pares")
 
