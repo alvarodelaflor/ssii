@@ -1,42 +1,48 @@
-from multiprocessing import Process, JoinableQueue
-from queue import Empty
-import time
+from multiprocessing import Process, Queue
 
 
-def consumer(que, pid, res):
-    while True:
-        try:
-            item = que.get(timeout=2)
-            print("Proceso %s consume: %s. Ingreso aceptado" % (pid, item))
-            que.task_done()
-        except Empty:
-            break
-    print('Consumer %s done' % pid)
+def square_list(to_do, done, id_process):
+    """
+    function to give a queue of numbers to return the squares in another queue
+    The process that performs it is identified by a ID
+    """
+    while not to_do.empty():
+        elem = to_do.get(timeout=100)
+        done.put(elem * elem)
+        print('Operation done by process ' + id_process)
+    print('Empty pipe by process %s' % id_process)
 
 
-def producer(sequence, que):
-    for item in sequence:
-        print('Nueva tarea: ', item)
-        que.put(item)
-        time.sleep(1.99999999999999999)
+def print_queue(done):
+    """
+    function to print queue elements
+    """
+    print("Queue elements:")
+    while not done.empty():
+        print(done.get())
+    print("Queue is now empty!")
 
 
-if __name__ == '__main__':
-    # En este ejemplo el productor crea nuevas tareas superando la capacidad de los consumidores, se perderán datos.
-    que = JoinableQueue()
+if __name__ == "__main__":
+    # creating multiprocessing Queue of initial numbers
+    to_do = Queue()
+    mylist = [i for i in range(5)]
+    [to_do.put(elem) for elem in mylist]
 
-    # create two consumer process
-    cons_p1 = Process(target=consumer, args=(que, 1))
-    cons_p1.start()
-    cons_p2 = Process(target=consumer, args=(que, 2))
-    cons_p2.start()
+    # creating multiprocessing Queue of square numbers
+    done = Queue()
 
-    names = ['Nolasco', 'Álvaro', 'Antonio', 'Francisco', 'Juan', 'Alcora', 'María', 'Carmen', 'Rosario', 'Clara']
-    numbers = [i for i in range(10)]
-    taks = ['Ingreso de %s€ a la cuenta de %s' % (i, names[i % len(names)]) for i in range(15)]
-    producer(taks, que)
+    # creating new processes
+    c1 = Process(target=print_queue, args=(done,))
+    c1.start()
 
-    que.join()
+    p1 = Process(target=square_list, args=(to_do, done, '1'))
+    p1.start()
 
-    cons_p1.join()
-    cons_p2.join()
+    p2 = Process(target=square_list, args=(to_do, done, '2'))
+    p2.start()
+
+    p1.join()
+    p2.join()
+    c1.join()
+
