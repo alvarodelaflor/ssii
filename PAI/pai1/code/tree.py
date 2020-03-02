@@ -6,10 +6,7 @@ leaf_hash = []
 
 class Merkleroot(object):
     def __init__(self):
-        pass
-    
-    def doubleSha256(input):
-        return hashlib.sha256(hashlib.sha256(input).hexdigest()).hexdigest() 
+        pass 
     
     def find_root(self, leaf_hash):
         hash = []
