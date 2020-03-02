@@ -1,6 +1,13 @@
 from multiprocessing import Process, JoinableQueue
 import time
 
+'''
+INPUT  PARAMETERS: process the four pipeline messages
+OUTPUT PARAMETERS: message received by the customer
+
+DETECTED PROBLEM:  pipe is closed before messages are received
+'''
+
 
 def sender(queue, messages):
     """
