@@ -1,8 +1,12 @@
-Para probar este caso habría que ejecutar los dos archivos, primero se ejecutaría el archivo echo-server.py, una vez ejecutado y esperando conexión se ejecutará el archivo echo-cliente.py
-, tras esto se procederá a realizar un eco de un mensaje que el cliente enviará y el servidor mandará de vuelta.
+Para probar este caso habrï¿½a que ejecutar los dos archivos, primero se ejecutarï¿½a el archivo echo-server.py, una vez ejecutado y esperando conexiï¿½n se ejecutarï¿½ el archivo echo-cliente.py
+, tras esto se procederï¿½ a realizar un eco de un mensaje que el cliente enviarï¿½ y el servidor mandarï¿½ de vuelta.
 
-Para solventar el problema de integridad se ha procedido a enviar los datos como bits, aún asi cabe una remota posibilidad de que el método recv de la librería sockets de python devuelva
-una cadena vacía.
+Para solventar el problema de integridad se ha procedido a enviar los datos como bits, aï¿½n asi cabe una remota posibilidad de que el mï¿½todo recv de la librerï¿½a sockets de python devuelva
+una cadena vacï¿½a.
 
 Mensaje enviado: This is the message.  It will be repeated.
 Mensaje recibido por el cliente: This is the message.  It will be repeated.
+
+====================
+Test apartado A - (testA_1, testA_2, testC_3)
+Las condiciones de carrera de los tres test se han solucionado con Lock(). Bloqueando la partes del cÃ³digo que poseen riegos de producirse alguna condiciÃ³n de carrera.
