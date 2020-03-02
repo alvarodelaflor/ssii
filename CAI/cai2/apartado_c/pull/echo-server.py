@@ -1,5 +1,6 @@
 import socket
 import sys
+from base64 import b64encode
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,7 +21,7 @@ while True:
     try:
         print ('connection from', client_address)
 
-        data = connection.recv(1024)
+        data = b64encode(connection.recv(1024))
         print ('received from client"%s"' % data)
         if data:
             print ('sending data back to the client')
