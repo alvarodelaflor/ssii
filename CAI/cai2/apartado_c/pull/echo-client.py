@@ -13,14 +13,14 @@ try:
     
     # Send data
     print ('sending This is the message.  It will be repeated.')
-    sock.send('This is the message.  It will be repeated.'.encode())
+    sock.send(('This is the message.  It will be repeated.').encode('utf-8'))
 
     # Look for the response
     #amount_received = 0
     #amount_expected = len(message)
     
     #while amount_received < amount_expected:
-    data = sock.recv(1024)
+    data = sock.recv(1024).decode('utf-8')
         #amount_received += len(data)
     print ('received from server "%s"' % data)
 
