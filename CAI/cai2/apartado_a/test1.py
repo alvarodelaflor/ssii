@@ -1,11 +1,13 @@
 import threading
 
 x = 0
+i = 1
 
 def increment():
-    global x
-    for i in range(500000):
+    global x, i
+    while i < 50000:
         x +=1
+        i += 1
 
 def main():
     hilo_1 = threading.Thread(target= increment)

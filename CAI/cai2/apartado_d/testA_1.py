@@ -1,12 +1,14 @@
 import threading
 
 x = 0
+i = 1
 
 def increment(lock):
-    global x
-    for i in range(500000):
+    global x, i
+    while i < 50000:
         lock.acquire()
         x +=1
+        i += 1
         lock.release()
 
 def main():
