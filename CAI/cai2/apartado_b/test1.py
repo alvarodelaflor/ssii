@@ -2,6 +2,13 @@ from multiprocessing import Process, JoinableQueue
 from queue import Empty
 import time
 
+'''
+INPUT  PARAMETERS: 10 Requests for admission
+OUTPUT PARAMETERS: 10 Acknowledgement of receipt of applications
+
+DETECTED PROBLEM:  consumer has exhausted his time before he has finished generating all the requests the producer
+'''
+
 
 def consumer(que, pid):
     while True:

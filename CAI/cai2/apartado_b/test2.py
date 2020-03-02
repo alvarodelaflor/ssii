@@ -1,5 +1,12 @@
 from multiprocessing import Process, Queue
 
+'''
+INPUT  PARAMETERS: process an ordered queue of 10 elements
+OUTPUT PARAMETERS: message of having processed the 10 processes
+
+DETECTED PROBLEM:  not all processes have been processed
+'''
+
 
 def square_list(to_do, done, id_process):
     """
