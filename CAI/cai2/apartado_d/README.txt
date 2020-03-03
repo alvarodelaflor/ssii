@@ -1,8 +1,24 @@
-Para probar este caso habría que ejecutar los dos archivos, primero se ejecutaría el archivo echo-server.py, una vez ejecutado y esperando conexión se ejecutará el archivo echo-cliente.py
-, tras esto se procederá a realizar un eco de un mensaje que el cliente enviará y el servidor mandará de vuelta.
+ï»¿Apartado a)
 
-Para solventar el problema de integridad se ha procedido a enviar los datos como bits, aún asi cabe una remota posibilidad de que el método recv de la librería sockets de python devuelva
-una cadena vacía.
+Test apartado A - (testA_1, testA_2, testC_3)
+Las condiciones de carrera de los tres test se han solucionado con Lock(). Bloqueando la partes del cÃ³digo que poseen riegos de producirse alguna condiciÃ³n de carrera.
+============================================================================================================================================================================================
+Apartado b)
+
+Para arreglar los problemas de todas las pruebas debemos ser conscientes de cÃ³mo funcionan realmente los tubos y los tiempos entre los procesos.
+
+Tenemos que ajustar las velocidades de los productores y consumidores y asegurarnos de que el canal de comunicaciÃ³n no se cierre hasta que 
+todos los procesos se han consumido.
+============================================================================================================================================================================================
+Apartado c)
+
+Para probar este caso habria que ejecutar los dos archivos, primero se ejecutara el archivo echo-server.py, una vez ejecutado y esperando conexion se ejecutara el archivo 
+echo-cliente.py, tras esto se procedera a realizar un eco de un mensaje que el cliente enviara y el servidor mandara de vuelta.
+
+Para solventar el problema de integridad se ha procedido a enviar los datos como bits, aun asi cabe una remota posibilidad de que el metodo recv de la libreria sockets de python devuelva
+una cadena vacia.
 
 Mensaje enviado: This is the message.  It will be repeated.
 Mensaje recibido por el cliente: This is the message.  It will be repeated.
+
+============================================================================================================================================================================================
