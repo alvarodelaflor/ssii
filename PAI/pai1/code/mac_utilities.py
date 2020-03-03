@@ -10,14 +10,16 @@ class Hmac:
         self.mac_to_compare = mac_to_compare
 
     def get_mac(self):
+        with open(self.file, 'rb') as f:
+            body = f.read()
+
         digest_maker = hmac.new(
             bytes(self.user_token, 'utf-8'),
-            b'',
+            body,
             hashlib.sha256,
         )
 
         digest_maker.update(self.file.encode('utf-8'))
-
         digest = digest_maker.hexdigest()
 
         return digest
