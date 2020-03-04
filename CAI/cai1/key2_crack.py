@@ -7,7 +7,7 @@ from itertools import *
 counter = 0
 
 pass_user = input("Enter Your sha256 Pass : ")
-file_user = 'C:\\Users\\Alvaro\\Desktop\\ssii\\cai1\\dictionary\\rockyou.txt'
+file_user = 'dictionary\\rockyou.txt'
 
 try:
     file_input = open(file_user,"r", encoding="utf8")
