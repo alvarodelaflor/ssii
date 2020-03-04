@@ -1,5 +1,8 @@
 import os
 from hash_utilities import Hash
+import sys
+
+sys.setrecursionlimit(10000)
 entries = os.scandir('files/')
 
 COUNT = [10]
@@ -170,9 +173,9 @@ class binary_search_tree:
 	def _search(self,value,cur_node):
 		if value==cur_node.value[0]:
 			return cur_node.value
-		elif value<cur_node.value[0] and cur_node.left_child.value[0]!=None:
+		elif value<cur_node.value[0] and cur_node.left_child!=None:
 			return self._search(value,cur_node.left_child)
-		elif value>cur_node.value[0] and cur_node.right_child.value[0]!=None:
+		elif value>cur_node.value[0] and cur_node.right_child!=None:
 			return self._search(value,cur_node.right_child)
 		return False 
     
@@ -222,6 +225,14 @@ for dicts in dictionaryCopy.items():
 tree.print_tree()
 print(tree.height())
 
-FileToVerify = ('file888.txt')
+FileToVerify = ('file7653.txt')
 
 print(tree.search(FileToVerify))
+
+valueReturn = tree.search(FileToVerify)
+
+f = open("files/" + valueReturn[0], "r")
+print(f.read())
+f.close()
+
+print(valueReturn)
