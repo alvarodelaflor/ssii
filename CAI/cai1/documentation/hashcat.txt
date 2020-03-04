@@ -1,0 +1,1 @@
+hashcat64.exe -m 150 -a 3 "bd38dd6cd73d9ada34652d8bf7112e4b5a631b6c:34567891 987654 300" ?b?b?b?b --force
