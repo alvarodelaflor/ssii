@@ -1,9 +1,6 @@
 import os
 from hash_utilities import Hash
-import sys
-
-sys.setrecursionlimit(10000)
-entries = os.scandir('files/')
+entries = os.scandir('code/files/')
 
 COUNT = [10]
 
@@ -173,66 +170,82 @@ class binary_search_tree:
 	def _search(self,value,cur_node):
 		if value==cur_node.value[0]:
 			return cur_node.value
-		elif value<cur_node.value[0] and cur_node.left_child!=None:
+		elif value<cur_node.value[0] and cur_node.left_child.value[0]!=None:
 			return self._search(value,cur_node.left_child)
-		elif value>cur_node.value[0] and cur_node.right_child!=None:
+		elif value>cur_node.value[0] and cur_node.right_child.value[0]!=None:
 			return self._search(value,cur_node.right_child)
 		return False 
     
 
-def fill_tree(tree,num_elems=100,max_int=1000):
-    from random import randint
-    for i in range (num_elems):
-        cur_elem = randint(0,max_int)
-        tree.insert(cur_elem)
-    return tree
-
- 
-
+	def fill_tree(tree,num_elems=100,max_int=1000):
+		from random import randint
+		for i in range (num_elems):
+			cur_elem = randint(0,max_int)
+			tree.insert(cur_elem)
+		return tree
 
 #tree = binary_search_tree()
 #tree.insert("files/file0.txt")
 #tree.print_tree()
+	def generate():
+		dictionary = dict()
 
-dictionary = dict()
+		for entry in entries:
+			file = open(entry.path,mode='r')
+			all_of_it = file.read()
+			hashFileContent = Hash(entry.path).get_hash()
+			dictionary[entry.name] = hashFileContent
+			file.close()
 
-for entry in entries:
-    file = open(entry.path,mode='r')
-    all_of_it = file.read()
-    hashFileContent = Hash(entry.path).get_hash()
-    dictionary[entry.name] = hashFileContent
-    file.close()
+		tree = binary_search_tree()
 
-tree = binary_search_tree()
+		items = list(dictionary.items())
+		length = int(len(items)/2)
 
-items = list(dictionary.items())
-length = int(len(items)/2)
+		middle = items[length-1]
 
-middle = items[length-1]
-
-dictionaryMiddle = {middle[0] : middle[1]}
-
-
-dictionaryCopy = dictionary.copy()
-dictionaryCopy.pop(middle[0])
+		dictionaryMiddle = {middle[0] : middle[1]}
 
 
-for dicts in dictionaryMiddle.items():
-    tree.insert(dicts)
-for dicts in dictionaryCopy.items():
-    tree.insert(dicts)
+		dictionaryCopy = dictionary.copy()
+		dictionaryCopy.pop(middle[0])
 
-tree.print_tree()
-print(tree.height())
 
-FileToVerify = ('file7653.txt')
+		for dicts in dictionaryMiddle.items():
+			tree.insert(dicts)
+		for dicts in dictionaryCopy.items():
+			tree.insert(dicts)
 
-print(tree.search(FileToVerify))
+		def serialize(root):
+			queue = [root]
+			for node in queue:
+				if not node:
+					continue
+				queue += [node.left_child, node.right_child]
 
-valueReturn = tree.search(FileToVerify)
+			return ':'.join(
+				map(lambda item: str(item.value) if item else '#', queue))
 
-f = open("files/" + valueReturn[0], "r")
-print(f.read())
-f.close()
+		s = serialize(tree.root)
+		txt = open ('binaryTree.txt','w', encoding="utf-8")		
+		txt.write(s)
 
-print(valueReturn)
+		return tree
+
+	def deserialize():
+		data = open("binaryTree.txt").read()
+		parts = data.split(':')
+		tree1 = binary_search_tree()
+		for p in parts:
+			if p != "#":
+				p_aux = p.split("'")
+				res = []
+				file_name = p_aux[1]
+				hash_file = p_aux[3]  
+				res.append(file_name)
+				res.append(hash_file)
+				tree1.insert(res)
+		return tree1
+		
+
+		
