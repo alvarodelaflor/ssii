@@ -1,6 +1,5 @@
 import os
 from hash_utilities import Hash
-entries = os.scandir('code/files/')
 
 COUNT = [10]
 
@@ -187,7 +186,14 @@ class binary_search_tree:
 #tree = binary_search_tree()
 #tree.insert("files/file0.txt")
 #tree.print_tree()
-	def generate():
+	def generate(directorio):
+		if directorio == 0:
+			entries = os.scandir('code/files/')
+		elif directorio == 1:
+			entries = os.scandir('code/files1/')
+		elif directorio == 2:
+			entries = os.scandir('code/files2/')
+
 		dictionary = dict()
 
 		for entry in entries:
@@ -227,13 +233,24 @@ class binary_search_tree:
 				map(lambda item: str(item.value) if item else '#', queue))
 
 		s = serialize(tree.root)
-		txt = open ('binaryTree.txt','w', encoding="utf-8")		
+		if directorio == 0:
+			txt = open ('binaryTree.txt','w', encoding="utf-8")		
+		elif directorio == 1:
+			txt = open ('binaryTree1.txt','w', encoding="utf-8")
+		elif directorio == 2:
+			txt = open ('binaryTree2.txt','w', encoding="utf-8")		
 		txt.write(s)
 
 		return tree
 
-	def deserialize():
-		data = open("binaryTree.txt").read()
+	def deserialize(directorio):
+		if directorio == 0:
+			data = open("binaryTree.txt").read()
+		elif directorio == 1:
+			data = open("binaryTree1.txt").read()
+		elif directorio == 2:
+			data = open("binaryTree2.txt").read()
+
 		parts = data.split(':')
 		tree1 = binary_search_tree()
 		for p in parts:
