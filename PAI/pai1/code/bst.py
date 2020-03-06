@@ -3,7 +3,6 @@ from hash_utilities import Hash
 import sys
 
 sys.setrecursionlimit(10000)
-entries = os.scandir('files/')
 
 COUNT = [10]
 
@@ -173,66 +172,142 @@ class binary_search_tree:
 	def _search(self,value,cur_node):
 		if value==cur_node.value[0]:
 			return cur_node.value
-		elif value<cur_node.value[0] and cur_node.left_child!=None:
+		elif value<cur_node.value[0] and cur_node.left_child.value[0]!=None:
 			return self._search(value,cur_node.left_child)
-		elif value>cur_node.value[0] and cur_node.right_child!=None:
+		elif value>cur_node.value[0] and cur_node.right_child.value[0]!=None:
 			return self._search(value,cur_node.right_child)
 		return False 
     
 
-def fill_tree(tree,num_elems=100,max_int=1000):
-    from random import randint
-    for i in range (num_elems):
-        cur_elem = randint(0,max_int)
-        tree.insert(cur_elem)
-    return tree
-
- 
-
+	def fill_tree(tree,num_elems=100,max_int=1000):
+		from random import randint
+		for i in range (num_elems):
+			cur_elem = randint(0,max_int)
+			tree.insert(cur_elem)
+		return tree
 
 #tree = binary_search_tree()
 #tree.insert("files/file0.txt")
 #tree.print_tree()
+	def generate(directorio,caso):
+		if directorio == 0 and caso == 1:
+			entries = os.scandir('servidores/caso1/servidor1')
+		elif directorio == 1 and caso == 1:
+			entries = os.scandir('servidores/caso1/servidor2')
+		elif directorio == 2 and caso == 1:
+			entries = os.scandir('servidores/caso1/servidor3')
 
-dictionary = dict()
+		if directorio == 0 and caso == 2:
+			entries = os.scandir('servidores/caso2/servidor1')
+		elif directorio == 1 and caso == 2:
+			entries = os.scandir('servidores/caso2/servidor2')
+		elif directorio == 2 and caso == 2:
+			entries = os.scandir('servidores/caso2/servidor3')
 
-for entry in entries:
-    file = open(entry.path,mode='r')
-    all_of_it = file.read()
-    hashFileContent = Hash(entry.path).get_hash()
-    dictionary[entry.name] = hashFileContent
-    file.close()
+		if directorio == 0 and caso == 3:
+			entries = os.scandir('servidores/caso3/servidor1')
+		elif directorio == 1 and caso == 3:
+			entries = os.scandir('servidores/caso3/servidor2')
+		elif directorio == 2 and caso == 3:
+			entries = os.scandir('servidores/caso3/servidor3')
 
-tree = binary_search_tree()
+		dictionary = dict()
 
-items = list(dictionary.items())
-length = int(len(items)/2)
+		for entry in entries:
+			file = open(entry.path,mode='r')
+			all_of_it = file.read()
+			hashFileContent = Hash(entry.path).get_hash()
+			dictionary[entry.name] = hashFileContent
+			file.close()
 
-middle = items[length-1]
+		tree = binary_search_tree()
 
-dictionaryMiddle = {middle[0] : middle[1]}
+		items = list(dictionary.items())
+		length = int(len(items)/2)
+
+		middle = items[length-1]
+
+		dictionaryMiddle = {middle[0] : middle[1]}
 
 
-dictionaryCopy = dictionary.copy()
-dictionaryCopy.pop(middle[0])
+		dictionaryCopy = dictionary.copy()
+		dictionaryCopy.pop(middle[0])
 
 
-for dicts in dictionaryMiddle.items():
-    tree.insert(dicts)
-for dicts in dictionaryCopy.items():
-    tree.insert(dicts)
+		for dicts in dictionaryMiddle.items():
+			tree.insert(dicts)
+		for dicts in dictionaryCopy.items():
+			tree.insert(dicts)
 
-tree.print_tree()
-print(tree.height())
+		def serialize(root):
+			queue = [root]
+			for node in queue:
+				if not node:
+					continue
+				queue += [node.left_child, node.right_child]
 
-FileToVerify = ('file7653.txt')
+			return ':'.join(
+				map(lambda item: str(item.value) if item else '#', queue))
 
-print(tree.search(FileToVerify))
+		s = serialize(tree.root)
+		if directorio == 0 and caso == 1:
+			txt = open ('servidores/caso1/tree1/binaryTree1.txt','w', encoding="utf-8")		
+		elif directorio == 1 and caso == 1:
+			txt = open ('servidores/caso1/tree2/binaryTree2.txt','w', encoding="utf-8")		
+		elif directorio == 2 and caso == 1:
+			txt = open ('servidores/caso1/tree3/binaryTree3.txt','w', encoding="utf-8")	
 
-valueReturn = tree.search(FileToVerify)
+		if directorio == 0 and caso == 2:
+			txt = open ('servidores/caso2/tree1/binaryTree1.txt','w', encoding="utf-8")		
+		elif directorio == 1 and caso == 2:
+			txt = open ('servidores/caso2/tree2/binaryTree2.txt','w', encoding="utf-8")		
+		elif directorio == 2 and caso == 2:
+			txt = open ('servidores/caso2/tree3/binaryTree3.txt','w', encoding="utf-8")	
 
-f = open("files/" + valueReturn[0], "r")
-print(f.read())
-f.close()
+		if directorio == 0 and caso == 3:
+			txt = open ('servidores/caso3/tree1/binaryTree1.txt','w', encoding="utf-8")		
+		elif directorio == 1 and caso == 3:
+			txt = open ('servidores/caso3/tree2/binaryTree2.txt','w', encoding="utf-8")		
+		elif directorio == 2 and caso == 3:
+			txt = open ('servidores/caso3/tree3/binaryTree3.txt','w', encoding="utf-8")		
+		txt.write(s)
 
-print(valueReturn)
+		return tree
+
+	def deserialize(directorio,caso):
+		if directorio == 0 and caso == '1':
+			data = open("servidores/caso1/tree1/binaryTree1.txt").read()
+		elif directorio == 1 and caso == '1':
+			data = open("servidores/caso1/tree2/binaryTree2.txt").read()
+		elif directorio == 2 and caso == '1':
+			data = open("servidores/caso1/tree3/binaryTree3.txt").read()
+
+		if directorio == 0 and caso == '2':
+			data = open("servidores/caso2/tree1/binaryTree1.txt").read()
+		elif directorio == 1 and caso == '2':
+			data = open("servidores/caso2/tree2/binaryTree2.txt").read()
+		elif directorio == 2 and caso == '2':
+			data = open("servidores/caso2/tree3/binaryTree3.txt").read()
+
+		if directorio == 0 and caso == '3':
+			data = open("servidores/caso3/tree1/binaryTree1.txt").read()
+		elif directorio == 1 and caso == '3':
+			data = open("servidores/caso3/tree2/binaryTree2.txt").read()
+		elif directorio == 2 and caso == '3':
+			data = open("servidores/caso3/tree3/binaryTree3.txt").read()
+
+		parts = data.split(':')
+		tree1 = binary_search_tree()
+		for p in parts:
+			if p != "#":
+				p_aux = p.split("'")
+				res = []
+				file_name = p_aux[1]
+				hash_file = p_aux[3]  
+				res.append(file_name)
+				res.append(hash_file)
+				tree1.insert(res)
+		return tree1
+		
+
+		
