@@ -4,12 +4,13 @@ from PAI.pai1.code.mac_utilities import Hmac
 
 
 class IntegrityProcess:
-    def __init__(self, file, hash_from_server, user_token, tree_files=None):
+    def __init__(self, file, hash_from_server, user_token, file_name=None):
         self.file = file
         self.hash_from_server = hash_from_server
         self.user_token = user_token
         self.log_file = '../logs/log'
-        self.tree_files = tree_files
+        self.file_name = file_name
+        self.tree_files = None
 
     def check_integrity(self):
         hash_from_file = Hash(self.file).get_hash()
@@ -25,6 +26,7 @@ class IntegrityProcess:
             return [False, None]
 
     def check_integrity_servers(self):
+        self.generate_tree_files()
         if self.tree_files is None or len(self.tree_files) < 0:
             return None
         else:
@@ -36,3 +38,14 @@ class IntegrityProcess:
                 if not check[0]:
                     failures.append(self.file)
             return failures
+
+    def generate_tree_files(self):
+        '''
+        TODO
+        tree_files = Carmen.find_by_file_name(self.file_name) -> dado un nombre de un archivo generar una lista de tuplas
+                                                                 donde:
+                                                                    Posición 0: ruta del archivo
+                                                                    Posición 1: hash del archivo
+                                                                    Ej: [ ['arbol1/file1', 'adfasdflake3324'], ['arbol2/file1', 'adfasdflake3324']. ['arbol3/file1', 'adfasdflake3324'] ]
+        self.tree_files = tree_files
+        '''
