@@ -27,6 +27,20 @@ class TestIntegrity(unittest.TestCase):
 
         self.assertEqual(integrity_check[0], False)
 
+    def test_integrity_server_true(self):
+        user_token = '1234567891011121314151617181921'
+        tree_files = []
+        server1 = ['dirección1', 'hash1']
+        server2 = ['dirección2', 'hash2']
+        server3 = ['dirección3', 'hash3']
+        tree_files.append(server1)
+        tree_files.append(server2)
+        tree_files.append(server3)
+
+        integrity_check = IntegrityProcess(None, None, user_token, tree_files).check_integrity_servers()
+
+        self.assertEqual(integrity_check[0], True)
+
 
 if __name__ == '__main__':
     unittest.main()
