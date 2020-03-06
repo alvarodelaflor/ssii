@@ -1,2 +1,5 @@
-ERROR: 2020-03-06 12:57:16.206962
- Integrity test has been failure in the file code/files/file20.txt
+
+ERROR: 2020-03-06 20:08:36.361065
+ Integrity test has been failure in the file servidores/caso3/servidor1/file6.txt
+ERROR: 2020-03-06 20:08:36.363061
+ Integrity test has been failure in the file servidores/caso3/servidor2/file6.txt

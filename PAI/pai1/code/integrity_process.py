@@ -19,8 +19,9 @@ class IntegrityProcess:
         if integrity_hash_test:
             return [True, Hmac(self.user_token, self.file, None).get_mac()]
         else:
-            f = open(self.log_file, "w")
+            f = open(self.log_file, "a")
             now = datetime.now()
+            f.write('\n')
             f.write("ERROR: %s\n Integrity test has been failure in the file %s" % (str(now), self.file))
             f.close()
             return [False, None]
@@ -31,6 +32,7 @@ class IntegrityProcess:
             return None
         else:
             failures = []
+
             for tree_file in self.tree_files:
                 self.file = tree_file[0]
                 self.hash_from_server = tree_file[1]
@@ -38,8 +40,7 @@ class IntegrityProcess:
                 if not check[0]:
                     failures.append(self.file)
                     print("La prueba de integridad ha sido erronea. Mire el log para más información.")
-                    sys.exit()
-                elif check[1]:
+                elif check[1] and self.tree_files.index(tree_file) == len(self.tree_files) - 1 and len(failures) == 0:
                     print("Mac: %s" % (check[1]))
                     sys.exit()
             return failures

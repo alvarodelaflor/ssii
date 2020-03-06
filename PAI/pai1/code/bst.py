@@ -1,5 +1,8 @@
 import os
 from hash_utilities import Hash
+import sys
+
+sys.setrecursionlimit(10000)
 
 COUNT = [10]
 
@@ -186,13 +189,27 @@ class binary_search_tree:
 #tree = binary_search_tree()
 #tree.insert("files/file0.txt")
 #tree.print_tree()
-	def generate(directorio):
-		if directorio == 0:
-			entries = os.scandir('code/files/')
-		elif directorio == 1:
-			entries = os.scandir('code/files1/')
-		elif directorio == 2:
-			entries = os.scandir('code/files2/')
+	def generate(directorio,caso):
+		if directorio == 0 and caso == 1:
+			entries = os.scandir('servidores/caso1/servidor1')
+		elif directorio == 1 and caso == 1:
+			entries = os.scandir('servidores/caso1/servidor2')
+		elif directorio == 2 and caso == 1:
+			entries = os.scandir('servidores/caso1/servidor3')
+
+		if directorio == 0 and caso == 2:
+			entries = os.scandir('servidores/caso2/servidor1')
+		elif directorio == 1 and caso == 2:
+			entries = os.scandir('servidores/caso2/servidor2')
+		elif directorio == 2 and caso == 2:
+			entries = os.scandir('servidores/caso2/servidor3')
+
+		if directorio == 0 and caso == 3:
+			entries = os.scandir('servidores/caso3/servidor1')
+		elif directorio == 1 and caso == 3:
+			entries = os.scandir('servidores/caso3/servidor2')
+		elif directorio == 2 and caso == 3:
+			entries = os.scandir('servidores/caso3/servidor3')
 
 		dictionary = dict()
 
@@ -233,23 +250,53 @@ class binary_search_tree:
 				map(lambda item: str(item.value) if item else '#', queue))
 
 		s = serialize(tree.root)
-		if directorio == 0:
-			txt = open ('binaryTree.txt','w', encoding="utf-8")		
-		elif directorio == 1:
-			txt = open ('binaryTree1.txt','w', encoding="utf-8")
-		elif directorio == 2:
-			txt = open ('binaryTree2.txt','w', encoding="utf-8")		
+		if directorio == 0 and caso == 1:
+			txt = open ('servidores/caso1/tree1/binaryTree1.txt','w', encoding="utf-8")		
+		elif directorio == 1 and caso == 1:
+			txt = open ('servidores/caso1/tree2/binaryTree2.txt','w', encoding="utf-8")		
+		elif directorio == 2 and caso == 1:
+			txt = open ('servidores/caso1/tree3/binaryTree3.txt','w', encoding="utf-8")	
+
+		if directorio == 0 and caso == 2:
+			txt = open ('servidores/caso2/tree1/binaryTree1.txt','w', encoding="utf-8")		
+		elif directorio == 1 and caso == 2:
+			txt = open ('servidores/caso2/tree2/binaryTree2.txt','w', encoding="utf-8")		
+		elif directorio == 2 and caso == 2:
+			txt = open ('servidores/caso2/tree3/binaryTree3.txt','w', encoding="utf-8")	
+
+		if directorio == 0 and caso == 3:
+			txt = open ('servidores/caso3/tree1/binaryTree1.txt','w', encoding="utf-8")		
+		elif directorio == 1 and caso == 3:
+			txt = open ('servidores/caso3/tree2/binaryTree2.txt','w', encoding="utf-8")		
+		elif directorio == 2 and caso == 3:
+			txt = open ('servidores/caso3/tree3/binaryTree3.txt','w', encoding="utf-8")		
 		txt.write(s)
 
 		return tree
 
-	def deserialize(directorio):
-		if directorio == 0:
-			data = open("binaryTree.txt").read()
-		elif directorio == 1:
-			data = open("binaryTree1.txt").read()
-		elif directorio == 2:
-			data = open("binaryTree2.txt").read()
+	def deserialize(directorio,caso):
+		parts = []
+		data = 'x'
+		if directorio == 0 and caso == 1:
+			data = open("servidores/caso1/tree1/binaryTree1.txt").read()
+		elif directorio == 1 and caso == 1:
+			data = open("servidores/caso1/tree2/binaryTree2.txt").read()
+		elif directorio == 2 and caso == 1:
+			data = open("servidores/caso1/tree3/binaryTree3.txt").read()
+
+		if directorio == 0 and caso == 2:
+			data = open("servidores/caso2/tree1/binaryTree1.txt").read()
+		elif directorio == 1 and caso == 2:
+			data = open("servidores/caso2/tree2/binaryTree2.txt").read()
+		elif directorio == 2 and caso == 2:
+			data = open("servidores/caso2/tree3/binaryTree3.txt").read()
+
+		if directorio == 0 and caso == 3:
+			data = open("servidores/caso3/tree1/binaryTree1.txt").read()
+		elif directorio == 1 and caso == 3:
+			data = open("servidores/caso3/tree2/binaryTree2.txt").read()
+		elif directorio == 2 and caso == 3:
+			data = open("servidores/caso3/tree3/binaryTree3.txt").read()
 
 		parts = data.split(':')
 		tree1 = binary_search_tree()
