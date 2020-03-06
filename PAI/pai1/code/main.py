@@ -1,6 +1,7 @@
 import bst as binaryTree
 import sys
 import integrity_process as integrity_process
+import time
 
 if __name__ == "__main__":
     print("Inserte el caso:")
@@ -56,7 +57,10 @@ if __name__ == "__main__":
         file_name = fileToVerify
         print("")
         
-        integrity_check = integrity_process.IntegrityProcess(None, None, user_hash, tree_files, file_name).check_integrity_servers()
-        
+        def ejecutaScript():
+            integrity_check = integrity_process.IntegrityProcess(None, None, user_hash, tree_files, file_name).check_integrity_servers()
+            time.sleep(10)
+        while True:
+            ejecutaScript()
     except: 
         print()
