@@ -37,15 +37,15 @@ if __name__ == "__main__":
         print("Inserte el hash del usuario")
         user = input() 
         user_hash = user
-        if caso == 1:
+        if caso == '1':
             server1 = ["servidores/caso1/servidor1/"+file1[0], file1[1]]
             server2 = ["servidores/caso1/servidor2/"+file2[0], file2[1]]
             server3 = ["servidores/caso1/servidor3/"+file3[0], file3[1]]
-        elif caso == 2:
+        elif caso == '2':
             server1 = ["servidores/caso2/servidor1/"+file1[0], file1[1]]
             server2 = ["servidores/caso2/servidor2/"+file2[0], file2[1]]
             server3 = ["servidores/caso2/servidor3/"+file3[0], file3[1]]
-        elif caso == 3:
+        elif caso == '3':
             server1 = ["servidores/caso3/servidor1/"+file1[0], file1[1]]
             server2 = ["servidores/caso3/servidor2/"+file2[0], file2[1]]
             server3 = ["servidores/caso3/servidor3/"+file3[0], file3[1]]

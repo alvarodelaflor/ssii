@@ -3,3 +3,5 @@ ERROR: 2020-03-06 20:08:36.361065
  Integrity test has been failure in the file servidores/caso3/servidor1/file6.txt
 ERROR: 2020-03-06 20:08:36.363061
  Integrity test has been failure in the file servidores/caso3/servidor2/file6.txt
+ERROR: 2020-03-06 20:27:20.902693
+ Integrity test has been failure in the file servidores/caso2/servidor2/file81.txt

@@ -275,27 +275,25 @@ class binary_search_tree:
 		return tree
 
 	def deserialize(directorio,caso):
-		parts = []
-		data = 'x'
-		if directorio == 0 and caso == 1:
+		if directorio == 0 and caso == '1':
 			data = open("servidores/caso1/tree1/binaryTree1.txt").read()
-		elif directorio == 1 and caso == 1:
+		elif directorio == 1 and caso == '1':
 			data = open("servidores/caso1/tree2/binaryTree2.txt").read()
-		elif directorio == 2 and caso == 1:
+		elif directorio == 2 and caso == '1':
 			data = open("servidores/caso1/tree3/binaryTree3.txt").read()
 
-		if directorio == 0 and caso == 2:
+		if directorio == 0 and caso == '2':
 			data = open("servidores/caso2/tree1/binaryTree1.txt").read()
-		elif directorio == 1 and caso == 2:
+		elif directorio == 1 and caso == '2':
 			data = open("servidores/caso2/tree2/binaryTree2.txt").read()
-		elif directorio == 2 and caso == 2:
+		elif directorio == 2 and caso == '2':
 			data = open("servidores/caso2/tree3/binaryTree3.txt").read()
 
-		if directorio == 0 and caso == 3:
+		if directorio == 0 and caso == '3':
 			data = open("servidores/caso3/tree1/binaryTree1.txt").read()
-		elif directorio == 1 and caso == 3:
+		elif directorio == 1 and caso == '3':
 			data = open("servidores/caso3/tree2/binaryTree2.txt").read()
-		elif directorio == 2 and caso == 3:
+		elif directorio == 2 and caso == '3':
 			data = open("servidores/caso3/tree3/binaryTree3.txt").read()
 
 		parts = data.split(':')
