@@ -39,10 +39,11 @@ class TestIntegrity(unittest.TestCase):
 
         integrity_check = IntegrityProcess(None, None, user_token, tree_files).check_integrity_servers()
 
-        for failure in integrity_check:
-            print(failure)
+        if integrity_check is not None:
+            for failure in integrity_check:
+                print(failure)
 
-        self.assertEqual(integrity_check, None)
+        self.assertEqual(integrity_check, [])
 
 
 if __name__ == '__main__':
