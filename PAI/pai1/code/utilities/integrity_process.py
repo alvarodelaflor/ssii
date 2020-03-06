@@ -1,15 +1,16 @@
 from datetime import *
-from hash_utilities import Hash
-from mac_utilities import Hmac
+import sys
+
+from code.utilities.hash_utilities import Hash
+from code.utilities.mac_utilities import Hmac
 
 
 class IntegrityProcess:
-    def __init__(self, file, hash_from_server, user_token, tree_files, file_name):
+    def __init__(self, file, hash_from_server, user_token, tree_files):
         self.file = file
         self.hash_from_server = hash_from_server
         self.user_token = user_token
         self.log_file = 'code/logs/log'
-        self.file_name = file_name
         self.tree_files = tree_files
 
     def check_integrity(self):
@@ -27,7 +28,6 @@ class IntegrityProcess:
             return [False, None]
 
     def check_integrity_servers(self):
-        #self.generate_tree_files()
         if self.tree_files is None or len(self.tree_files) < 0:
             return None
         else:
@@ -44,15 +44,4 @@ class IntegrityProcess:
                     print("Mac: %s" % (check[1]))
                     sys.exit()
             return failures
-
-    def generate_tree_files(self):
-        '''
-        TODO
-        tree_files = Carmen.find_by_file_name(self.file_name) -> dado un nombre de un archivo generar una lista de tuplas
-                                                                 donde:
-                                                                    Posición 0: ruta del archivo
-                                                                    Posición 1: hash del archivo
-                                                                    Ej: [ ['arbol1/file1', 'adfasdflake3324'], ['arbol2/file1', 'adfasdflake3324']. ['arbol3/file1', 'adfasdflake3324'] ]
-        self.tree_files = tree_files
-        '''
 

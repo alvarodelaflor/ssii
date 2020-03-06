@@ -1,6 +1,7 @@
 import os
-from hash_utilities import Hash
 import sys
+
+from code.utilities.hash_utilities import Hash
 
 sys.setrecursionlimit(10000)
 

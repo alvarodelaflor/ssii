@@ -1,5 +1,6 @@
-from PAI.pai1.code.mac_utilities import Hmac
 import unittest
+
+from code.utilities.mac_utilities import Hmac
 
 
 class TestHmac(unittest.TestCase):

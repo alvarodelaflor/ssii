@@ -1,5 +1,5 @@
-from PAI.pai1.code.hash_utilities import Hash
 import unittest
+from code.utilities.hash_utilities import Hash
 
 
 class TestHash(unittest.TestCase):
