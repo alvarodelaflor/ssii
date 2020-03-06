@@ -35,7 +35,7 @@ if __name__ == "__main__":
         file3 = tree3.search(fileToVerify)
 
         
-        print("Inserte el hash del usuario")
+        print("Inserte el token del usuario")
         user = input() 
         user_hash = user
         if caso == '1':
