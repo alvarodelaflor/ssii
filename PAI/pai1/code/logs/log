@@ -1,13 +1,13 @@
 
-ERROR: 2020-03-06 23:28:03.190730
+ERROR: 2020-03-07 11:09:11.043536
  Integrity test has been failure in the file servidores/caso2/servidor2/file81.txt
-ERROR: 2020-03-06 23:28:13.195193
+ERROR: 2020-03-07 11:09:21.049250
  Integrity test has been failure in the file servidores/caso2/servidor2/file81.txt
-ERROR: 2020-03-06 23:28:23.206734
- Integrity test has been failure in the file servidores/caso2/servidor2/file81.txt
-ERROR: 2020-03-06 23:28:33.217750
- Integrity test has been failure in the file servidores/caso2/servidor2/file81.txt
-ERROR: 2020-03-06 23:29:05.374397
+ERROR: 2020-03-07 11:09:51.253081
  Integrity test has been failure in the file servidores/caso3/servidor1/file6.txt
-ERROR: 2020-03-06 23:29:05.375394
+ERROR: 2020-03-07 11:09:51.277014
+ Integrity test has been failure in the file servidores/caso3/servidor2/file6.txt
+ERROR: 2020-03-07 11:10:01.278425
+ Integrity test has been failure in the file servidores/caso3/servidor1/file6.txt
+ERROR: 2020-03-07 11:10:01.279422
  Integrity test has been failure in the file servidores/caso3/servidor2/file6.txt
