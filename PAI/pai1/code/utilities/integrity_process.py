@@ -1,8 +1,8 @@
 from datetime import *
 import sys
 
-from code.utilities.hash_utilities import Hash
-from code.utilities.mac_utilities import Hmac
+import utilities.hash_utilities as Hash
+import utilities.mac_utilities as Hmac
 
 
 class IntegrityProcess:
