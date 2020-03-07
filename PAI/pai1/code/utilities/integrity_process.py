@@ -1,6 +1,6 @@
-from datetime import *
 import sys
-
+import os
+from datetime import *
 from code.utilities.hash_utilities import Hash
 from code.utilities.mac_utilities import Hmac
 
@@ -24,6 +24,8 @@ class IntegrityProcess:
             now = datetime.now()
             f.write('\n')
             f.write("ERROR: %s\n Integrity test has been failure in the file %s" % (str(now), self.file))
+            f.flush()
+            os.fsync(f)
             f.close()
             return [False, None]
 
