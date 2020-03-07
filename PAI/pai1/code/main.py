@@ -1,5 +1,7 @@
 import time
-#import utilities.integrity_process as binaryTree
+
+#from code.utilities import integrity_process, bst as binaryTree
+
 from utilities import integrity_process, bst as binaryTree
 
 if __name__ == "__main__":
