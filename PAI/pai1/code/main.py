@@ -1,6 +1,8 @@
 import time
 
-from code.utilities import integrity_process, bst as binaryTree
+#from code.utilities import integrity_process, bst as binaryTree
+
+from utilities import integrity_process, bst as binaryTree
 
 if __name__ == "__main__":
     case = input("Seleccione el caso deseado-. \n"
