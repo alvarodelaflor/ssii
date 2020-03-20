@@ -15,6 +15,9 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.net.SocketFactory;
 import javax.swing.JOptionPane;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import PAI2.Nonce;
 
 
 public class IntegrityVerifierClient {
@@ -36,19 +39,26 @@ public class IntegrityVerifierClient {
 	 
 	 final Mac mac_SHA256 = Mac.getInstance("HmacSHA256");
 	 
+     String nonce = Nonce.createRandomNonce();
+     
+     output.println(nonce);
+	 
 	// generate a key from the generator
      SecretKeySpec key = new SecretKeySpec(secreto.getBytes(), "HmacSHA256");
 
      mac_SHA256.init(key);
-
+     
+     String mensajeNonce = mensaje + nonce;
+     
      // get the string as UTF-8 bytes
-     byte[] b = mensaje.getBytes("UTF-8");
+     byte[] b = mensajeNonce.getBytes("UTF-8");
 
      // create a digest from the byte array
      byte[] digest = mac_SHA256.doFinal(b);
      
      String digestHex = bytesToHex(digest);
-          	 
+ 	 
+     	 
 	 // Habría que calcular el correspondiente MAC con la clave compartida por servidor/cliente
 	 output.println(digestHex);
 	 

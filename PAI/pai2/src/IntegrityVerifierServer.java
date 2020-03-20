@@ -46,6 +46,8 @@ public class IntegrityVerifierServer {
 	// Se lee del cliente el mensaje y el macdelMensajeEnviado
 	 String mensaje = input.readLine();
 	 
+	 String nonce = input.readLine();
+	 
 	 // A continuación habría que calcular el mac del MensajeEnviado que podría ser
 	 String macdelMensajeEnviado = input.readLine();
 	 
@@ -58,18 +60,18 @@ public class IntegrityVerifierServer {
 	 SecretKeySpec key = new SecretKeySpec(secreto.getBytes(), "HmacSHA256");
 
 	 mac_SHA256.init(key);
+	 
+	 String mensajeNonce = mensaje + nonce;
 
 	 // get the string as UTF-8 bytes
-	 byte[] b = mensaje.getBytes("UTF-8");
+	 byte[] b = mensajeNonce.getBytes("UTF-8");
 
 	 // create a digest from the byte array
 	 byte[] digest = mac_SHA256.doFinal(b);
 	 
 	 
 	 String macDelMensajeCalculado = bytesToHex(digest);
-	     
-	 System.err.println( macdelMensajeEnviado);
-	     
+	     	     
 	 if (macdelMensajeEnviado.equals(macDelMensajeCalculado)) {
 	 output.println( "Mensaje enviado integro " );
 	 }
