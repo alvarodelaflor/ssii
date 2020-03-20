@@ -119,7 +119,7 @@ public class IntegrityVerifierClient {
                 bw.close();
                 
             } else {
-                JOptionPane.showMessageDialog(null, "Su mensaje no es integro");
+                JOptionPane.showMessageDialog(null, "La respuesta del servidor no ha sido integra");
 
                 File fw = new File("src/logFile_client.log");
                 BufferedWriter bw = new BufferedWriter(new FileWriter(fw, true));
