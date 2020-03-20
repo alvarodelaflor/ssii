@@ -1,11 +1,6 @@
-package PAI2;
+package Test4;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -17,8 +12,9 @@ import javax.net.SocketFactory;
 import javax.swing.JOptionPane;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
-import PAI2.Nonce;
+import Test4.Nonce;
 
 
 public class IntegrityVerifierClient {
@@ -62,22 +58,76 @@ public class IntegrityVerifierClient {
 
             String digestHex = utilities.bytesToHex(digest);
 
-
             // Habría que calcular el correspondiente MAC con la clave compartida por servidor/cliente
             output.println(digestHex);
 
             // Importante para que el mensaje se envíe
             output.flush();
 
-
+//----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
             // Crea un objeto BufferedReader para leer la respuesta del servidor
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            // Lee la respuesta del servidor
-            String respuesta = input.readLine();
+            // Se lee del servidor el mensaje y el macdelMensajeEnviado
+            String mensajeServer = input.readLine();
 
-            // Muestra la respuesta al cliente
-            JOptionPane.showMessageDialog(null, respuesta);
+            String nonceServer = input.readLine();
+
+            // A continuación habría que calcular el mac del MensajeEnviado que podría ser
+            String macServer = input.readLine();
+
+            //mac del MensajeCalculado
+
+            final Mac mac_SHA256_server = Mac.getInstance("HmacSHA256");
+
+            SecretKeySpec key_verify = new SecretKeySpec(secreto.getBytes(), "HmacSHA256");
+
+            mac_SHA256_server.init(key_verify);
+
+            String mensajeNonceServer = mensajeServer + nonceServer;
+
+            // get the string as UTF-8 bytes
+            byte[] bServer = mensajeNonceServer.getBytes("UTF-8");
+
+            // create a digest from the byte array
+            byte[] digest_server = mac_SHA256_server.doFinal(bServer);
+
+
+            String macDelMensajeCalculado = utilities.bytesToHex(digest_server);
+
+            FileReader linesNonce = new FileReader("src/nonce_client.log");
+
+            Boolean nonceValid = true;
+
+            try (BufferedReader br = new BufferedReader(linesNonce)) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (line.equals(nonceServer)) {
+                        nonceValid = false;
+                    }
+                }
+            }
+
+            if (macServer.equals(macDelMensajeCalculado) && nonceValid) {
+                JOptionPane.showMessageDialog(null, mensajeServer);
+                
+                File fw = new File("src/nonce_client.log");
+                BufferedWriter bw = new BufferedWriter(new FileWriter(fw, true));
+                bw.append(nonce);
+                bw.newLine();
+                bw.close();
+                
+            } else {
+                JOptionPane.showMessageDialog(null, mensajeServer);
+
+                File fw = new File("src/logFile_client.log");
+                BufferedWriter bw = new BufferedWriter(new FileWriter(fw, true));
+                Date date = new Date();
+                bw.append("ERROR: " + date + "\n" + "Integrity message has been failure. Message: " + mensaje);
+                bw.newLine();
+                bw.close();
+            }
 
             // Se cierra la conexion
             output.close();

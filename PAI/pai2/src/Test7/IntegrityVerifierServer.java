@@ -1,4 +1,4 @@
-package PAI2;
+package Test7;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -90,12 +90,38 @@ public class IntegrityVerifierServer {
                     }
                 }
                 if (macdelMensajeEnviado.equals(macDelMensajeCalculado) && nonceValid) {
-                    output.println("Mensaje enviado integro ");
+                    output.println("Mensaje enviado integro");
                     File fw = new File("src/nonce.log");
                     BufferedWriter bw = new BufferedWriter(new FileWriter(fw, true));
                     bw.append(nonce);
                     bw.newLine();
                     bw.close();
+                    // Construcción del Nonce
+                    String nonce_pass = Nonce.createRandomNonce();
+                    output.println(nonce_pass);
+
+                    // generate a key from the generator
+                    SecretKeySpec key_pass = new SecretKeySpec(secreto.getBytes(), "HmacSHA256");
+
+                    // Construcción de la MAC
+                    final Mac mac_SHA256_pass = Mac.getInstance("HmacSHA256");
+                    mac_SHA256_pass.init(key_pass);
+
+                    String mensajeNonce_pass = "Mensaje enviado integro" + nonce_pass;
+
+                    // get the string as UTF-8 bytes
+                    byte[] b_pass = mensajeNonce_pass.getBytes("UTF-8");
+
+                    // create a digest from the byte array
+                    byte[] digest_pass = mac_SHA256_pass.doFinal(b_pass);
+
+                    String digestHex_pass = utilities.bytesToHex(digest_pass);
+
+                    // Habría que calcular el correspondiente MAC con la clave compartida por servidor/cliente
+                    output.println(digestHex_pass);
+
+                    // Importante para que el mensaje se envíe
+                    output.flush();
 
                 } else {
                     output.println("Mensaje enviado no integro.");
@@ -106,6 +132,33 @@ public class IntegrityVerifierServer {
                     bw.append("ERROR: " + date + "\n" + "Integrity message has been failure. Message: " + mensaje);
                     bw.newLine();
                     bw.close();
+
+                    // Construcción del Nonce
+                    String nonce_pass = Nonce.createRandomNonce();
+                    output.println(nonce_pass);
+
+                    // generate a key from the generator
+                    SecretKeySpec key_pass = new SecretKeySpec(secreto.getBytes(), "HmacSHA256");
+
+                    // Construcción de la MAC
+                    final Mac mac_SHA256_pass = Mac.getInstance("HmacSHA256");
+                    mac_SHA256_pass.init(key_pass);
+
+                    String mensajeNonce_pass = "Mensaje enviado no integro." + nonce_pass;
+
+                    // get the string as UTF-8 bytes
+                    byte[] b_pass = mensajeNonce_pass.getBytes("UTF-8");
+
+                    // create a digest from the byte array
+                    byte[] digest_pass = mac_SHA256_pass.doFinal(b_pass);
+
+                    String digestHex_pass = utilities.bytesToHex(digest_pass);
+
+                    // Habría que calcular el correspondiente MAC con la clave compartida por servidor/cliente
+                    output.println(digestHex_pass);
+
+                    // Importante para que el mensaje se envíe
+                    output.flush();
                 }
                 output.close();
                 input.close();
