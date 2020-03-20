@@ -1,6 +1,9 @@
 package PAI2;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -9,6 +12,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -71,12 +75,18 @@ public class IntegrityVerifierServer {
 	 
 	 
 	 String macDelMensajeCalculado = bytesToHex(digest);
-	     	     
 	 if (macdelMensajeEnviado.equals(macDelMensajeCalculado)) {
-	 output.println( "Mensaje enviado integro " );
-	 }
-	 else {
-	 output.println( "Mensaje enviado no integro." );
+		 output.println( "Mensaje enviado integro " );
+		 
+	 } else {
+		 output.println( "Mensaje enviado no integro." );
+		 
+		 File fw = new File("src/logFile.log");
+		 BufferedWriter bw = new BufferedWriter(new FileWriter(fw, true));
+		 Date date = new Date();
+		 bw.append("ERROR: " + date + "\n" + "Integrity message has been failure. Message: " + mensaje);
+		 bw.newLine();
+		 bw.close();
 	 }
 	 output.close();
 	 input.close();
