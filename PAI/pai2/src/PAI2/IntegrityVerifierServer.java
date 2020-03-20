@@ -81,7 +81,7 @@ public class IntegrityVerifierServer {
 	 
 	 String macDelMensajeCalculado = bytesToHex(digest);
 	 
-	 FileReader linesNonce = new FileReader("src/PAI2/nonce.log");
+	 FileReader linesNonce = new FileReader("src/nonce.log");
 	 
 	 Boolean nonceValid = true;
 	 
@@ -93,9 +93,9 @@ public class IntegrityVerifierServer {
 		       }
 		    }
 		}
-	 if (macdelMensajeEnviado.equals(macDelMensajeCalculado)) {
+	 if (macdelMensajeEnviado.equals(macDelMensajeCalculado) && nonceValid) {
 		 output.println( "Mensaje enviado integro " );
-		 File fw = new File("src/PAI2/nonce.log");
+		 File fw = new File("src/nonce.log");
 		 BufferedWriter bw = new BufferedWriter(new FileWriter(fw, true));
 		 bw.append(nonce);
 		 bw.newLine();
