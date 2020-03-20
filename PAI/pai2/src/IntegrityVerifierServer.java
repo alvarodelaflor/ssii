@@ -3,6 +3,7 @@ package PAI2;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,6 +18,10 @@ import java.util.Date;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.net.ServerSocketFactory;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 
 public class IntegrityVerifierServer {
 	
@@ -75,8 +80,26 @@ public class IntegrityVerifierServer {
 	 
 	 
 	 String macDelMensajeCalculado = bytesToHex(digest);
+	 
+	 FileReader linesNonce = new FileReader("src/PAI2/nonce.log");
+	 
+	 Boolean nonceValid = true;
+	 
+	 try (BufferedReader br = new BufferedReader(linesNonce)) {
+		    String line;
+		    while ((line = br.readLine()) != null) {
+		       if (line.equals(nonce)) {
+		    	   nonceValid = false;
+		       }
+		    }
+		}
 	 if (macdelMensajeEnviado.equals(macDelMensajeCalculado)) {
 		 output.println( "Mensaje enviado integro " );
+		 File fw = new File("src/PAI2/nonce.log");
+		 BufferedWriter bw = new BufferedWriter(new FileWriter(fw, true));
+		 bw.append(nonce);
+		 bw.newLine();
+		 bw.close();
 		 
 	 } else {
 		 output.println( "Mensaje enviado no integro." );
