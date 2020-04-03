@@ -5,20 +5,23 @@ import javax.swing.JOptionPane;
 
 
 public class BYODClient {
+	
+    private static final String[] protocols = new String[] {"TLSv1.3"};
+    private static final String[] cipher_suites = new String[] {"TLS_AES_128_GCM_SHA256"};
+
 
     public BYODClient() {
         try {
             SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             SSLSocket socket = (SSLSocket) socketFactory.createSocket("localhost", 7070);
+            socket.setEnabledProtocols(protocols);
+            socket.setEnabledCipherSuites(cipher_suites);
             // Crea un PrintWriter para enviar mensaje/MAC al servidor
             PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
             String mensaje = JOptionPane.showInputDialog(null, "Introduzca su mensaje:");
-            // Env√≠o del mensaje al servidor
+            // EnvÌo del mensaje al servidor
             output.println(mensaje);
-            // Habr√≠a que calcular el correspondiente MAC con la clave compartida por servidor/cliente
-            String macdelMensaje = "San Pedro Nolasco";
-            output.println(macdelMensaje);
-            // Importante para que el mensaje se env√≠e
+            // Importante para que el mensaje se envÌe
             output.flush();
             // Crea un objeto BufferedReader para leer la respuesta del servidor
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -40,7 +43,7 @@ public class BYODClient {
         }
     }
 
-    // ejecuci√≥n del cliente de verificaci√≥n de la integridad
+    // ejecuciÛn del cliente de verificaciÛn de la integridad
     public static void main(String args[]) {
         new BYODClient();
     }

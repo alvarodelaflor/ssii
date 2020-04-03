@@ -11,14 +11,21 @@ import javax.net.ssl.SSLServerSocketFactory;
 public class BYODServer {
 
     private ServerSocket serverSocket;
+    private static final String[] protocols = new String[] {"TLSv1.3"};
+    private static final String[] cipher_suites = new String[] {"TLS_AES_128_GCM_SHA256"};
+
+
 
     // Constructor del Servidor
     public BYODServer() throws Exception {
         SSLServerSocketFactory socketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-        serverSocket = (SSLServerSocket) socketFactory.createServerSocket(7070);
+        SSLServerSocket  serverSocket = (SSLServerSocket) socketFactory.createServerSocket(7070);
+        serverSocket.setEnabledProtocols(protocols);
+        serverSocket.setEnabledCipherSuites(cipher_suites);
+        
     }
 
-    // EjecuciÃ³n del servidor para escuchar peticiones de los clientes
+    // Ejecución del servidor para escuchar peticiones de los clientes
     private void runServer() {
         while (true) {
             // Espera las peticiones del cliente para comprobar mensaje/MAC
@@ -31,16 +38,14 @@ public class BYODServer {
                 PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
                 // Se lee del cliente el mensaje y el macdelMensajeEnviado
                 String mensaje = input.readLine();
-                // A continuaciÃ³n habrÃ­a que calcular el mac del MensajeEnviado que podrÃ­a ser
+                // A continuación habría que calcular el mac del MensajeEnviado que podría ser
                 String macdelMensajeEnviado = input.readLine();
                 //mac del MensajeCalculado
 
 //                if (macMensajeEnviado.equals(macdelMensajeCalculado)) {
                 if (true) {
                     output.println("Mensaje enviado integro " + mensaje);
-                } else {
-                    output.println("Mensaje enviado no integro.");
-                }
+                } 
                 output.close();
                 input.close();
                 socket.close();
