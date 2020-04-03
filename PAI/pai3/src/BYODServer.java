@@ -37,14 +37,18 @@ public class BYODServer {
                 // Abre un PrintWriter para enviar datos al cliente
                 PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
                 // Se lee del cliente el mensaje y el macdelMensajeEnviado
-                String mensaje = input.readLine();
+                
+		String username = input.readLine();
+                String password = input.readLine();
+                String msg = input.readLine();
+		
                 // A continuación habría que calcular el mac del MensajeEnviado que podría ser
                 String macdelMensajeEnviado = input.readLine();
                 //mac del MensajeCalculado
 
-//                if (macMensajeEnviado.equals(macdelMensajeCalculado)) {
+//              if (macMensajeEnviado.equals(macdelMensajeCalculado)) {
                 if (true) {
-                    output.println("Mensaje enviado integro " + mensaje);
+                    output.println("Mensaje enviado integro " + username + password + msg);
                 } 
                 output.close();
                 input.close();

@@ -17,10 +17,20 @@ public class BYODClient {
             socket.setEnabledProtocols(protocols);
             socket.setEnabledCipherSuites(cipher_suites);
             // Crea un PrintWriter para enviar mensaje/MAC al servidor
-            PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-            String mensaje = JOptionPane.showInputDialog(null, "Introduzca su mensaje:");
-            // Envío del mensaje al servidor
-            output.println(mensaje);
+	    PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+	    //NOMBRE DE USUARIO
+            String username = JOptionPane.showInputDialog(null, "Introduzca su nombre de usuario:");
+            output.println(username);
+            
+            //CONTRASEÑA
+            String password = JOptionPane.showInputDialog(null, "Introduzca su contraseña:");
+            output.println(password);
+            
+            //MENSAJE
+            String msg = JOptionPane.showInputDialog(null, "Introduzca su mensaje:");
+            output.println(msg);
+            
             // Importante para que el mensaje se envíe
             output.flush();
             // Crea un objeto BufferedReader para leer la respuesta del servidor
