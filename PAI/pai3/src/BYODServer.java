@@ -1,5 +1,3 @@
-package com.pai3;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,7 +37,7 @@ public class BYODServer {
 
 //                if (macMensajeEnviado.equals(macdelMensajeCalculado)) {
                 if (true) {
-                    output.println("Mensaje enviado integro ");
+                    output.println("Mensaje enviado integro " + mensaje);
                 } else {
                     output.println("Mensaje enviado no integro.");
                 }

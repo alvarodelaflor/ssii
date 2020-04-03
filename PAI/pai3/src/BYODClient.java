@@ -1,5 +1,3 @@
-package com.pai3;
-
 import java.io.*;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -14,9 +12,8 @@ public class BYODClient {
             SSLSocket socket = (SSLSocket) socketFactory.createSocket("localhost", 7070);
             // Crea un PrintWriter para enviar mensaje/MAC al servidor
             PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-            String userName = JOptionPane.showInputDialog(null, "Introduzca su mensaje:");
+            String mensaje = JOptionPane.showInputDialog(null, "Introduzca su mensaje:");
             // Envío del mensaje al servidor
-            String mensaje = "Santa María del Alcor";
             output.println(mensaje);
             // Habría que calcular el correspondiente MAC con la clave compartida por servidor/cliente
             String macdelMensaje = "San Pedro Nolasco";
