@@ -1,12 +1,10 @@
 package com.pai3;
 
 import java.io.*;
-import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.swing.JOptionPane;
@@ -14,12 +12,12 @@ import java.util.Date;
 
 
 
-public class IntegrityVerifierClient {
+public class BYODClient {
 
 	public Utilities utilities = new Utilities();
 
     // Constructor que abre una conexi�n Socket para enviar mensaje/MAC al servidor
-    public IntegrityVerifierClient() throws NoSuchAlgorithmException, InvalidKeyException {
+    public BYODClient() throws NoSuchAlgorithmException, InvalidKeyException {
         try {
             SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             SSLSocket socket = (SSLSocket) socketFactory.createSocket("localhost", 7070);
@@ -143,7 +141,7 @@ public class IntegrityVerifierClient {
     }
 
     public static void main(String args[]) throws InvalidKeyException, NoSuchAlgorithmException {
-        new IntegrityVerifierClient();
+        new BYODClient();
     }
 
 }

@@ -16,17 +16,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 
-public class IntegrityVerifierServer {
+public class BYODServer {
 
     private ServerSocket serverSocket;
 	public Utilities utilities = new Utilities();
 
 	// Constructor del Servidor
-    public IntegrityVerifierServer() throws Exception {
+    public BYODServer() throws Exception {
 
         // espera conexiones del cliente y comprueba login
         SSLServerSocketFactory socketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
@@ -172,7 +171,7 @@ public class IntegrityVerifierServer {
     }
 
     public static void main(String args[]) throws Exception {
-        IntegrityVerifierServer server = new IntegrityVerifierServer();
+        BYODServer server = new BYODServer();
         server.runServer();
     }
 }
