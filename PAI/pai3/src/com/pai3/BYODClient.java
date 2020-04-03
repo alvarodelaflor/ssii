@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import javax.swing.*;
 import javax.net.*;
 
@@ -11,10 +13,10 @@ public class BYODClient {
 
     public BYODClient() {
         try {
-            SocketFactory socketFactory = (SocketFactory) SocketFactory.getDefault();
-            Socket socket = (Socket) socketFactory.createSocket("localhost", 7070 );
-                    // Crea un PrintWriter para enviar mensaje/MAC al servidor
-                    PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            SSLSocket socket = (SSLSocket) socketFactory.createSocket("localhost", 7070);
+            // Crea un PrintWriter para enviar mensaje/MAC al servidor
+            PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
             String userName = JOptionPane.showInputDialog(null, "Introduzca su mensaje:");
             // Envío del mensaje al servidor
             String mensaje = "Msg1";
