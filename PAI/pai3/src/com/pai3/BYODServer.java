@@ -21,17 +21,15 @@ import javax.net.ssl.SSLServerSocketFactory;
 
 public class BYODServer {
 
-    private ServerSocket serverSocket;
-	public Utilities utilities = new Utilities();
+    private SSLServerSocket serverSocket;
+    public Utilities utilities = new Utilities();
 
-	// Constructor del Servidor
+    // Constructor del Servidor
     public BYODServer() throws Exception {
 
-        // espera conexiones del cliente y comprueba login
         SSLServerSocketFactory socketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+        serverSocket = (SSLServerSocket) socketFactory.createServerSocket(7070);
 
-        // crea Socket de la factoría
-        SSLServerSocket serverSocket = (SSLServerSocket) socketFactory.createServerSocket(7070);
     }
 
     // Ejecución del servidor para escuchar peticiones de los clientes
