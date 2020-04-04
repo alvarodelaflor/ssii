@@ -10,19 +10,17 @@ import javax.net.ssl.SSLServerSocketFactory;
 
 public class BYODServer {
 
-    private ServerSocket serverSocket;
-    private static final String[] protocols = new String[] {"TLSv1.3"};
-    private static final String[] cipher_suites = new String[] {"TLS_AES_128_GCM_SHA256"};
-
+    private SSLServerSocket serverSocket;
+    private static final String[] protocols = new String[]{"TLSv1.3"};
+    private static final String[] cipher_suites = new String[]{"TLS_AES_128_GCM_SHA256"};
 
 
     // Constructor del Servidor
     public BYODServer() throws Exception {
         SSLServerSocketFactory socketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-        SSLServerSocket  serverSocket = (SSLServerSocket) socketFactory.createServerSocket(7070);
+        this.serverSocket = (SSLServerSocket) socketFactory.createServerSocket(7070);
         serverSocket.setEnabledProtocols(protocols);
         serverSocket.setEnabledCipherSuites(cipher_suites);
-        
     }
 
     // Ejecución del servidor para escuchar peticiones de los clientes
@@ -37,11 +35,11 @@ public class BYODServer {
                 // Abre un PrintWriter para enviar datos al cliente
                 PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
                 // Se lee del cliente el mensaje y el macdelMensajeEnviado
-                
-		String username = input.readLine();
+
+                String username = input.readLine();
                 String password = input.readLine();
                 String msg = input.readLine();
-		
+
                 // A continuación habría que calcular el mac del MensajeEnviado que podría ser
                 String macdelMensajeEnviado = input.readLine();
                 //mac del MensajeCalculado
@@ -49,7 +47,7 @@ public class BYODServer {
 //              if (macMensajeEnviado.equals(macdelMensajeCalculado)) {
                 if (true) {
                     output.println("Mensaje enviado integro " + username + password + msg);
-                } 
+                }
                 output.close();
                 input.close();
                 socket.close();
