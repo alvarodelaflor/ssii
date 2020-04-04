@@ -3,8 +3,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 
@@ -40,9 +40,6 @@ public class BYODServer {
                 String password = input.readLine();
                 String msg = input.readLine();
 
-                // A continuación habría que calcular el mac del MensajeEnviado que podría ser
-                String macdelMensajeEnviado = input.readLine();
-                //mac del MensajeCalculado
 
 //              if (macMensajeEnviado.equals(macdelMensajeCalculado)) {
                 if (true) {
@@ -51,8 +48,12 @@ public class BYODServer {
                 output.close();
                 input.close();
                 socket.close();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
+            } catch (SSLHandshakeException exception) {
+                // Output expected SSLHandshakeExceptions.
+                System.err.println("Error: " + exception);
+            } catch (IOException exception) {
+                // Output unexpected IOExceptions.
+                System.err.println("Error: " + exception);
             }
         }
     }
