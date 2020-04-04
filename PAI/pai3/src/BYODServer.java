@@ -1,4 +1,8 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -10,17 +14,12 @@ import javax.net.ssl.SSLServerSocketFactory;
 
 public class BYODServer {
 
-    private SSLServerSocket serverSocket;
-    private static final String[] protocols = new String[]{"TLSv1.3"};
-    private static final String[] cipher_suites = new String[]{"TLS_AES_128_GCM_SHA256"};
-
+    private ServerSocket serverSocket;
 
     // Constructor del Servidor
     public BYODServer() throws Exception {
         SSLServerSocketFactory socketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-        this.serverSocket = (SSLServerSocket) socketFactory.createServerSocket(7070);
-        serverSocket.setEnabledProtocols(protocols);
-        serverSocket.setEnabledCipherSuites(cipher_suites);
+        serverSocket = (SSLServerSocket) socketFactory.createServerSocket(7070);;
     }
 
     // Ejecución del servidor para escuchar peticiones de los clientes
@@ -35,19 +34,38 @@ public class BYODServer {
                 // Abre un PrintWriter para enviar datos al cliente
                 PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
                 // Se lee del cliente el mensaje y el macdelMensajeEnviado
-
+                
                 String username = input.readLine();
                 String password = input.readLine();
                 String msg = input.readLine();
-
-                // A continuación habría que calcular el mac del MensajeEnviado que podría ser
-                String macdelMensajeEnviado = input.readLine();
-                //mac del MensajeCalculado
-
-//              if (macMensajeEnviado.equals(macdelMensajeCalculado)) {
-                if (true) {
-                    output.println("Mensaje enviado integro " + username + password + msg);
+		
+                //Validar usuario
+                Boolean userValid = false;
+                FileReader linesNonce = new FileReader("user.txt");
+                try (BufferedReader br = new BufferedReader(linesNonce)) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        if (line.equals(username+"||"+password)) {
+                        	userValid = true;
+                        }
+                    }
                 }
+                
+                if (!userValid) {
+                    output.println("Lo siento, el nombre de usuario y la contraseña no son válidas");
+                } else{
+                	if (true) { //COMPROBAR MENSAJE
+                        File archivo = new File("msg.txt");
+                        BufferedWriter bw = null;
+                        bw = new BufferedWriter(new FileWriter(archivo));
+                        bw.write(msg + "\n");
+                        bw.close();
+                		output.println("Su mensaje se almaceno correctamento.");
+                	}else { 
+                		output.println("Lo siento, su mensaje no se almaceno");
+                	}
+                }
+                
                 output.close();
                 input.close();
                 socket.close();
