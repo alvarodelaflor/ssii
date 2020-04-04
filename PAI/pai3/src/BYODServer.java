@@ -1,4 +1,8 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -39,12 +43,34 @@ public class BYODServer {
                 String username = input.readLine();
                 String password = input.readLine();
                 String msg = input.readLine();
-
-
-//              if (macMensajeEnviado.equals(macdelMensajeCalculado)) {
-                if (true) {
-                    output.println("Mensaje enviado integro " + username + password + msg);
+		
+                //Validar usuario
+                Boolean userValid = false;
+                FileReader linesNonce = new FileReader("user.txt");
+                try (BufferedReader br = new BufferedReader(linesNonce)) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        if (line.equals(username+"||"+password)) {
+                        	userValid = true;
+                        }
+                    }
                 }
+                
+                if (!userValid) {
+                    output.println("Lo siento, el nombre de usuario y la contraseña no son válidas");
+                } else{
+                	if (true) { //COMPROBAR MENSAJE
+                        File archivo = new File("msg.txt");
+                        BufferedWriter bw = null;
+                        bw = new BufferedWriter(new FileWriter(archivo));
+                        bw.write(msg + "\n");
+                        bw.close();
+                		output.println("Su mensaje se almaceno correctamento.");
+                	}else { 
+                		output.println("Lo siento, su mensaje no se almaceno");
+                	}
+                }
+
                 output.close();
                 input.close();
                 socket.close();
