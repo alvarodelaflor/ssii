@@ -20,21 +20,23 @@ public class Utilities {
 
     public String encrypt(String input, String key) {
         byte[] crypted = null;
+        Cipher cipher = null;
         try {
-            Cipher cipher = Cipher.getInstance(this.method);
-            SecretKeySpec skey = new SecretKeySpec(key.getBytes(), "AES");
+            SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), "AES");
+            cipher = Cipher.getInstance(this.method);
+            java.util.Base64.Encoder encoder = java.util.Base64.getEncoder();
             if (this.method.equals("AES/GCM/NoPadding")) {
-                cipher.init(Cipher.DECRYPT_MODE, skey, gcmParameterSpec);
+                GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, IV);
+                cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmParameterSpec);
             } else {
-                cipher.init(Cipher.ENCRYPT_MODE, skey);
+                cipher.init(Cipher.ENCRYPT_MODE, keySpec);
             }
             crypted = cipher.doFinal(input.getBytes());
+            return new String(encoder.encodeToString(crypted));
         } catch (Exception e) {
             System.out.println(e.toString());
+            return null;
         }
-        Base64.Encoder encoder = java.util.Base64.getEncoder();
-
-        return new String(encoder.encodeToString(crypted));
     }
 
     public String decrypt(String input, String key) {
@@ -57,8 +59,8 @@ public class Utilities {
 
     public static void main(String[] args) {
         String key = "mvLBiZsiTbGwrfJB";
-        String data = "ABCAFASDFASDFASDFASDFA<ZDF";
-        List<String> methods = Arrays.asList("AES/ECB/PKCS5Padding", "AES/GCM/NoPadding");
+        String data = "ABC";
+        List<String> methods = Arrays.asList("AES/GCM/NoPadding","AES/ECB/PKCS5Padding");
 
         for (String method: methods) {
             Utilities utilities = new Utilities(method);
@@ -72,7 +74,7 @@ public class Utilities {
             long finish_decrypt = System.currentTimeMillis();
             Double timeDecrypt = (finish_decrypt - start_decrypt) / 1000.;
 
-            System.err.println("Método utilizado: " + method);
+            System.out.println("Método utilizado: " + method);
             System.out.println(String.format("Cadena encriptada: %s tardando %s en realizarse", encrypt, timeEncrypt));
             System.out.println(String.format("Cadena desencriptada: %s tardando %s en realizarse\n", decrypt, timeDecrypt));
         }
