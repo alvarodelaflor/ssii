@@ -1,4 +1,5 @@
 import javax.crypto.Cipher;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Arrays;
 import java.util.Base64;
@@ -7,6 +8,11 @@ import java.util.List;
 public class Utilities {
 
     private String method;
+    public final int AES_KEY_SIZE = 256;
+    public final int GCM_IV_LENGTH = 12;
+    public final int GCM_TAG_LENGTH = 16;
+    byte[] IV = new byte[GCM_IV_LENGTH];
+    public GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, IV);
 
     public Utilities(String method) {
         this.method = method;
@@ -33,7 +39,11 @@ public class Utilities {
             Base64.Decoder decoder = java.util.Base64.getDecoder();
             SecretKeySpec skey = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance(this.method);
-            cipher.init(Cipher.DECRYPT_MODE, skey);
+            if (this.method.equals("AES/GCM/NoPadding")) {
+                cipher.init(Cipher.DECRYPT_MODE, skey, gcmParameterSpec);
+            } else {
+                cipher.init(Cipher.DECRYPT_MODE, skey);
+            }
             output = cipher.doFinal(decoder.decode(input));
         } catch (Exception e) {
             System.out.println(e.toString());
