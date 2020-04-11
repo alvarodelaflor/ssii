@@ -21,9 +21,13 @@ public class Utilities {
     public String encrypt(String input, String key) {
         byte[] crypted = null;
         try {
-            SecretKeySpec skey = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance(this.method);
-            cipher.init(Cipher.ENCRYPT_MODE, skey);
+            SecretKeySpec skey = new SecretKeySpec(key.getBytes(), "AES");
+            if (this.method.equals("AES/GCM/NoPadding")) {
+                cipher.init(Cipher.DECRYPT_MODE, skey, gcmParameterSpec);
+            } else {
+                cipher.init(Cipher.ENCRYPT_MODE, skey);
+            }
             crypted = cipher.doFinal(input.getBytes());
         } catch (Exception e) {
             System.out.println(e.toString());
@@ -53,7 +57,7 @@ public class Utilities {
 
     public static void main(String[] args) {
         String key = "mvLBiZsiTbGwrfJB";
-        String data = "ABC";
+        String data = "ABCAFASDFASDFASDFASDFA<ZDF";
         List<String> methods = Arrays.asList("AES/ECB/PKCS5Padding", "AES/GCM/NoPadding");
 
         for (String method: methods) {
