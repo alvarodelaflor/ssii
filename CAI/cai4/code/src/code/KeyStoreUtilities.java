@@ -24,7 +24,7 @@ public class KeyStoreUtilities {
 
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBE");
 
-            KeyStore.SecretKeyEntry ske = (KeyStore.SecretKeyEntry) ks.getEntry(new String(entry).substring(0, 40), keyStorePP);
+            KeyStore.SecretKeyEntry ske = (KeyStore.SecretKeyEntry) ks.getEntry(new String(entry).substring(0, 10000), keyStorePP);
 
             PBEKeySpec keySpec = (PBEKeySpec) factory.getKeySpec(ske.getSecretKey(), PBEKeySpec.class);
 
@@ -46,7 +46,7 @@ public class KeyStoreUtilities {
         ks.load(null, keyStorePassword.toCharArray());
         KeyStore.PasswordProtection keyStorePP = new KeyStore.PasswordProtection(keyStorePassword.toCharArray());
 
-        ks.setEntry(new String(entry).substring(0, 40), new KeyStore.SecretKeyEntry(generatedSecret), keyStorePP);
+        ks.setEntry(new String(entry).substring(0, 10000), new KeyStore.SecretKeyEntry(generatedSecret), keyStorePP);
 
         FileOutputStream fos = new java.io.FileOutputStream(keystoreLocation);
         ks.store(fos, keyStorePassword.toCharArray());
