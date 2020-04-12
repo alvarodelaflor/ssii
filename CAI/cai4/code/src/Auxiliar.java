@@ -84,8 +84,8 @@ public class Auxiliar {
                 String result = equals.toString().replaceAll("true", "Sí").replaceAll("false", "No");
 
                 System.out.println("Método utilizado: " + method);
-                System.out.println(String.format("Cadena encriptada ha tardando %s en realizarse", timeEncrypt));
-                System.out.println(String.format("Cadena desencriptada ha tardando %s en realizarse", timeDecrypt));
+                System.out.println(String.format("Archivo encriptado, ha tardando %s en realizarse", timeEncrypt));
+                System.out.println(String.format("Archivo desencriptado, ha tardando %s en realizarse", timeDecrypt));
                 System.out.println(String.format(String.format("¿Original es igual a desencriptado? %s\n", result)));
             } else {
                 System.err.println(String.format("Unsupported algorithm: %s\n", name_method));
@@ -94,66 +94,67 @@ public class Auxiliar {
     }
 
     public void executeWithDelete(String method) {
-        //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
-        Auxiliar auxiliar = new Auxiliar();
-        byte[] data_bytes = auxiliar.readBytesFromFile("./src/imagesTest/image.jpg");
-        String key = "mvLBiZsiTbGwrfJB";
-        //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
+        try {
+            //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
+            Auxiliar auxiliar = new Auxiliar();
+            byte[] data_bytes = auxiliar.readBytesFromFile("./src/imagesTest/image.jpg");
+            String key = "mvLBiZsiTbGwrfJB";
+            //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
 
-        String name_method = method.replace("/", "_");
-        Utilities utilities = new Utilities(method);
-        long start_encrypt = System.currentTimeMillis();
-        byte[] encrypt = utilities.encrypt(data_bytes, key);
-        long finish_encrypt = System.currentTimeMillis();
-        Double timeEncrypt = (finish_encrypt - start_encrypt) / 1000.;
+            String name_method = method.replace("/", "_");
+            Utilities utilities = new Utilities(method);
+            long start_encrypt = System.currentTimeMillis();
+            byte[] encrypt = utilities.encrypt(data_bytes, key);
+            long finish_encrypt = System.currentTimeMillis();
+            Double timeEncrypt = (finish_encrypt - start_encrypt) / 1000.;
 
-        if (encrypt != null) {
-            auxiliar.getImageFromByteArray(encrypt, String.format("image.jpg", name_method), true);
+            if (encrypt != null) {
+                auxiliar.getImageFromByteArray(encrypt, String.format("image.jpg", name_method), true);
 
-            long start_decrypt = System.currentTimeMillis();
-            byte[] decrypt = utilities.decrypt(encrypt, key);
-            long finish_decrypt = System.currentTimeMillis();
-            Double timeDecrypt = (finish_decrypt - start_decrypt) / 1000.;
-//            auxiliar.getImageFromByteArray(decrypt, String.format("image_decrypt_%s.jpg", name_method));
+                long start_decrypt = System.currentTimeMillis();
+                byte[] decrypt = utilities.decrypt(encrypt, key);
+                long finish_decrypt = System.currentTimeMillis();
+                Double timeDecrypt = (finish_decrypt - start_decrypt) / 1000.;
 
-            String string_original = new String(data_bytes);
-            String string_decrypt = new String(decrypt);
-            Boolean equals = string_original.equals(string_decrypt);
-            String result = equals.toString().replaceAll("true", "Sí").replaceAll("false", "No");
+                String string_original = new String(data_bytes);
+                String string_decrypt = new String(decrypt);
+                Boolean equals = string_original.equals(string_decrypt);
+                String result = equals.toString().replaceAll("true", "Sí").replaceAll("false", "No");
 
-            System.out.println("Método utilizado: " + method);
-            System.out.println(String.format("Cadena encriptada ha tardando %s en realizarse", timeEncrypt));
-            System.out.println(String.format("Cadena desencriptada ha tardando %s en realizarse", timeDecrypt));
-            System.out.println(String.format(String.format("¿Original es igual a desencriptado? %s\n", result)));
-        } else {
-            System.err.println(String.format("Unsupported algorithm: %s\n", name_method));
+                System.out.println("Método utilizado: " + method);
+                System.out.println(String.format("Archivo encriptado, ha tardando %s en realizarse", timeEncrypt));
+                System.out.println(String.format("Archivo desencriptado, ha tardando %s en realizarse", timeDecrypt));
+                System.out.println(String.format(String.format("¿Original es igual a desencriptado? %s\n", result)));
+            } else {
+                System.err.println(String.format("Unsupported algorithm: %s\n", name_method));
+            }
+        } catch (Exception e) {
+            System.out.println("Se ha producido un error al desencriptar");
         }
     }
 
     public void executeDecrypt(String method) {
-        //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
-        Auxiliar auxiliar = new Auxiliar();
-        byte[] data_bytes = auxiliar.readBytesFromFile("./src/imagesTest/image.jpg");
-        String key = "mvLBiZsiTbGwrfJB";
-        //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
+        try {
+            //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
+            Auxiliar auxiliar = new Auxiliar();
+            byte[] data_bytes = auxiliar.readBytesFromFile("./src/imagesTest/image.jpg");
+            String key = "mvLBiZsiTbGwrfJB";
+            //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
 
-        String name_method = method.replace("/", "_");
-        Utilities utilities = new Utilities(method);
+            String name_method = method.replace("/", "_");
+            Utilities utilities = new Utilities(method);
 
-        long start_decrypt = System.currentTimeMillis();
-        byte[] decrypt = utilities.decrypt(data_bytes, key);
-        long finish_decrypt = System.currentTimeMillis();
-        Double timeDecrypt = (finish_decrypt - start_decrypt) / 1000.;
-        auxiliar.getImageFromByteArray(decrypt, String.format("image.jpg", name_method), true);
+            long start_decrypt = System.currentTimeMillis();
+            byte[] decrypt = utilities.decrypt(data_bytes, key);
+            long finish_decrypt = System.currentTimeMillis();
+            Double timeDecrypt = (finish_decrypt - start_decrypt) / 1000.;
+            auxiliar.getImageFromByteArray(decrypt, String.format("image.jpg", name_method), true);
 
-        String string_original = new String(data_bytes);
-        String string_decrypt = new String(decrypt);
-        Boolean equals = string_original.equals(string_decrypt);
-        String result = equals.toString().replaceAll("true", "Sí").replaceAll("false", "No");
 
-        System.out.println("Método utilizado: " + method);
-        System.out.println(String.format("Cadena desencriptada ha tardando %s en realizarse", timeDecrypt));
-        System.out.println(String.format(String.format("¿Original es igual a desencriptado? %s\n", result)));
-
+            System.out.println("Método utilizado: " + method);
+            System.out.println(String.format("Archivo desencriptado, ha tardando %s en realizarse", timeDecrypt));
+        } catch (Exception e) {
+            System.out.println("Se ha producido un error al desencriptar");
+        }
     }
 }
