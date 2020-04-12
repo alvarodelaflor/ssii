@@ -247,10 +247,10 @@ public class Auxiliar {
         try {
             Integer i = 0;
             Integer photo = 2;
-            while (i < 3) {
+            while (i < 4) {
                 File file = new File("./src/images/image.jpg");
                 file.delete();
-                File source = new File(String.format("./src/clusterImages/%sk.jpg", photo));
+                File source = new File(String.format("./src/clusterImages/%sk_kb.jpg", photo));
                 photo += 2;
                 File dest = new File("./src/images/image.jpg");
                 FileUtils.copyFile(source, dest);
@@ -261,7 +261,7 @@ public class Auxiliar {
             }
             File file = new File("./src/images/image.jpg");
             file.delete();
-            File source = new File(String.format("./src/clusterImages/%sk.jpg", 2));
+            File source = new File(String.format("./src/clusterImages/image.jpg", 2));
             File dest = new File("./src/images/image.jpg");
             FileUtils.copyFile(source, dest);
         } catch (Exception e) {

@@ -84,15 +84,6 @@ public class Utilities {
         return crypted;
     }
 
-    public static String decryptRSA(String cipherText, PrivateKey privateKey) throws Exception {
-        byte[] bytes = Base64.getDecoder().decode(cipherText);
-
-        Cipher decriptCipher = Cipher.getInstance("RSA");
-        decriptCipher.init(Cipher.DECRYPT_MODE, privateKey);
-
-        return new String(decriptCipher.doFinal(bytes), "UTF-8");
-    }
-
     public byte[] decrypt(byte[] input, String key) {
         byte[] output = null;
         try {
