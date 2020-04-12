@@ -132,3 +132,5 @@ dmypy.json
 .pyre/
 
 /CAI/cai1/dictionary/rockyou.txt
+
+CAI/cai4/code/out/
