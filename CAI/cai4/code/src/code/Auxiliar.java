@@ -3,8 +3,14 @@ package code;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
+import java.security.Key;
+import java.security.KeyStore;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public class Auxiliar {
 
@@ -101,7 +107,6 @@ public class Auxiliar {
             byte[] data_bytes = auxiliar.readBytesFromFile("./src/imagesTest/image.jpg");
 //            String key1 = "mvLBiZsiTbGwrfJB";
             //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
-
             String name_method = method.replace("/", "_");
             Utilities utilities = new Utilities(method, key);
             long start_encrypt = System.currentTimeMillis();
@@ -126,11 +131,41 @@ public class Auxiliar {
                 System.out.println(String.format("Archivo encriptado, ha tardando %s en realizarse", timeEncrypt));
                 System.out.println(String.format("Archivo desencriptado, ha tardando %s en realizarse", timeDecrypt));
                 System.out.println(String.format(String.format("¿Original es igual a desencriptado? %s\n", result)));
+                
+                if (method.equals("ChaCha20-Poly1305/None/NoPadding")) {
+                	char[] pwdArray = "password".toCharArray();
+            		
+            		System.out.println(pwdArray);
+
+            		KeyStore ks = KeyStore.getInstance("JKS");
+            		
+            		ks.load(new FileInputStream("src/keystoreCha.jks"), pwdArray);
+            		
+            		System.out.println(ks);
+            		
+            		byte[] decodedKey = Base64.getDecoder().decode(key);
+            		// rebuild key using SecretKeySpec
+            		SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES"); 
+            		
+            		System.out.println(originalKey);
+            		
+            		
+            		KeyStore.SecretKeyEntry secret
+            		 = new KeyStore.SecretKeyEntry(originalKey);
+            		KeyStore.ProtectionParameter password
+            		 = new KeyStore.PasswordProtection(pwdArray);
+            		if (ks.containsAlias("db-encryption-secret-image")) {
+            			ks.deleteEntry("db-encryption-secret-image");
+            		}
+            		ks.setEntry("db-encryption-secret-image", secret, password);
+
+            		ks.store(new FileOutputStream("src/keystoreCha.jks"), pwdArray);
+                }
             } else {
                 System.err.println(String.format("Unsupported algorithm: %s\n", name_method));
             }
         } catch (Exception e) {
-            System.out.println("Se ha producido un error al desencriptar");
+            System.out.println("Se ha producido un error al encriptar");
         }
     }
 
@@ -144,6 +179,37 @@ public class Auxiliar {
 
             String name_method = method.replace("/", "_");
             Utilities utilities = new Utilities(method, key);
+            
+            if (method.equals("ChaCha20-Poly1305/None/NoPadding")) {
+            	char[] pwdArray = "password".toCharArray();
+        		
+        		System.out.println(pwdArray);
+
+        		KeyStore ks = KeyStore.getInstance("JKS");
+        		
+        		ks.load(new FileInputStream("src/keystoreCha.jks"), pwdArray);
+        		
+        		Key ssoSigningKey = ks.getKey("db-encryption-secret-image", pwdArray);
+        		
+        		byte[] decodedKey = Base64.getDecoder().decode(key);
+        		// rebuild key using SecretKeySpec
+        		SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES"); 
+        		
+        		if(ssoSigningKey.equals(originalKey)) {
+        			long start_decrypt = System.currentTimeMillis();
+                    byte[] decrypt = utilities.decrypt(data_bytes, key);
+                    long finish_decrypt = System.currentTimeMillis();
+                    Double timeDecrypt = (finish_decrypt - start_decrypt) / 1000.;
+                    auxiliar.getImageFromByteArray(decrypt, String.format("image.jpg", name_method), true);
+
+
+                    System.out.println("Método utilizado: " + method);
+                    System.out.println(String.format("Archivo desencriptado, ha tardando %s en realizarse", timeDecrypt));
+        		}else {
+            		System.out.println("clave incorrecta");
+
+        		}  	
+            }else {
 
             long start_decrypt = System.currentTimeMillis();
             byte[] decrypt = utilities.decrypt(data_bytes, key);
@@ -154,6 +220,7 @@ public class Auxiliar {
 
             System.out.println("Método utilizado: " + method);
             System.out.println(String.format("Archivo desencriptado, ha tardando %s en realizarse", timeDecrypt));
+            }
         } catch (Exception e) {
             System.out.println("Se ha producido un error al desencriptar");
         }
