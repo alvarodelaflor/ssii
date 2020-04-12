@@ -5,7 +5,10 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -36,10 +39,17 @@ public class Utilities {
     public SecretKey generateSecretKey() {
         SecretKey secretKey = null;
         try {
-            KeyGenerator keyGen = KeyGenerator.getInstance("ChaCha20");
-            secretKey = keyGen.generateKey();
+            byte[] keyBytes = Files.readAllBytes(Paths.get("./src/key/key"));
+            if (keyBytes.length <= 0) {
+                KeyGenerator keyGen = KeyGenerator.getInstance("ChaCha20");
+                secretKey = keyGen.generateKey();
+                byte[] encoded = secretKey.getEncoded();
+                Files.write(Paths.get("./src/key/key"), encoded);
+            } else {
+                secretKey = new SecretKeySpec(keyBytes, 0, keyBytes.length, "ChaCha20");
+            }
         } catch (Exception e) {
-            System.out.println("An exception occurs while generating a secret key");
+            System.out.println("An exception occurs while generating a secret key" + e);
         }
         return secretKey;
     }
