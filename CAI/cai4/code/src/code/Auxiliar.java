@@ -1,5 +1,7 @@
 package code;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
@@ -238,6 +240,32 @@ public class Auxiliar {
 
         } catch (Exception e) {
             System.out.println("Se ha producido un error. No se puede ejecutar el programa");
+        }
+    }
+
+    public void doTest() {
+        try {
+            Integer i = 0;
+            Integer photo = 2;
+            while (i < 2) {
+                File file = new File("./src/images/image.jpg");
+                file.delete();
+                File source = new File(String.format("./src/clusterImages/%sk.jpg", photo));
+                photo += 2;
+                File dest = new File("./src/images/image.jpg");
+                FileUtils.copyFile(source, dest);
+                System.out.println(String.format("Test number %s", i));
+                List<String> methods = Arrays.asList("AES/GCM/NoPadding", "AES/ECB/PKCS5Padding", "ChaCha20-Poly1305/None/NoPadding");
+                new Auxiliar().executeWithoutDelete(methods, "mvLBiZsiTbGwrfJB");
+                i++;
+            }
+            File file = new File("./src/images/image.jpg");
+            file.delete();
+            File source = new File(String.format("./src/clusterImages/%sk.jpg", 2));
+            File dest = new File("./src/images/image.jpg");
+            FileUtils.copyFile(source, dest);
+        } catch (Exception e) {
+            System.out.println("Se ha producido un error ejecutando el test " + e);
         }
     }
 }
