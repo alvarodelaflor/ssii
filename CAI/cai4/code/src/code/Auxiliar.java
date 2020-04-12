@@ -160,10 +160,21 @@ public class Auxiliar {
     public void initProgram() {
         try {
 
-            System.out.println("Introduzca la clave secreta que desee para cifrar y descifrar el archivo");
-            InputStreamReader isr1 = new InputStreamReader(System.in);
-            BufferedReader br1 = new BufferedReader (isr1);
-            String key = br1.readLine();
+            System.out.println("Introduzca la clave secreta que desee para cifrar y descifrar el archivo\nDebe ser una cadena de 16 caracteres, por ejemplo, mvLBiZsiTbGwrfJB\nClave (q para salir): ");
+            String key = "";
+            InputStreamReader isr1;
+            BufferedReader br1;
+            while (key.length() < 16 || key.length() > 16) {
+                isr1 = new InputStreamReader(System.in);
+                br1 = new BufferedReader(isr1);
+                key = br1.readLine();
+                if (key.equals("q")) {
+                    System.exit(1);
+                }
+                if (key.length() < 16 || key.length() > 16) {
+                    System.out.println("La clave tiene que contener 16 caracteres exactos.\nSi desea cancelar la ejecución del programa pulse q\nClave: ");
+                }
+            }
 
             System.out.println("Seleccine el método que desee entre los distintos casos:\n" +
                     "0: Se ejecutarán todos los cifrados, utilizando la imagen 'image.jpg' de la carpeta ./src/images donde se mostrarán todas las imagenes cifradas y su resultado tras descifrar\n" +
@@ -173,13 +184,32 @@ public class Auxiliar {
                     "4: Se descifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'AES/GCM/NoPadding'\n" +
                     "5: Se descifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'AES/ECB/PKCS5Padding'\n" +
                     "6: Se descifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'ChaCha20-Poly1305/None/NoPadding'\n" +
-                    "Escriba su elección: ");
+                    "Escriba su elección (q para salir): ");
 
+            String cadena = "";
+            Boolean res = true;
+            Integer selected = null;
+            List<Integer> validOptions = Arrays.asList(0, 1, 2, 3, 4, 5, 6);
             InputStreamReader isr2 = new InputStreamReader(System.in);
-            BufferedReader br2 = new BufferedReader (isr2);
-            String cadena = br2.readLine();
+            BufferedReader br2 = new BufferedReader(isr2);
+            while (res) {
+                isr2 = new InputStreamReader(System.in);
+                br2 = new BufferedReader(isr2);
+                cadena = br2.readLine();
+                try {
+                    if (cadena.equals("q")) {
+                        System.exit(1);
+                    }
+                    selected = Integer.parseInt(cadena);
+                } catch (Exception e) {
+                    selected = -1;
+                }
+                res = !validOptions.contains(selected);
+                if (res) {
+                    System.out.println("Introduzca una opción válida, puede ser: " + validOptions.toString() + "\nElección: ");
+                }
+            }
 
-            int selected = Integer.parseInt(cadena);
             List<String> methods = null;
             switch (selected) {
                 case 0:
