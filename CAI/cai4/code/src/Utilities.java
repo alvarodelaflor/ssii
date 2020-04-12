@@ -4,6 +4,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -132,68 +134,47 @@ public class Utilities {
     }
 
     public static void main(String[] args) throws Exception {
-        String key = "mvLBiZsiTbGwrfJB";
-        String data = "ABC";
 
-        //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
-        Auxiliar auxiliar = new Auxiliar();
-        byte[] data_bytes = auxiliar.readBytesFromFile("./src/images/image.jpg");
-        List<String> methods = Arrays.asList("AES/GCM/NoPadding", "AES/ECB/PKCS5Padding", "ChaCha20-Poly1305/None/NoPadding", "RSA");
-        //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
+        System.out.println("Seleccine el método que desee entre los distintos casos:\n" +
+                "0: Se ejecutarán todos los cifrados, utilizando la imagen 'image.jpg' de la carpeta ./src/images donde se mostrarán todas las imagenes cifradas y su resultado tras descifrar\n" +
+                "1: Se cifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'AES/GCM/NoPadding'\n" +
+                "2: Se cifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'AES/ECB/PKCS5Padding'\n" +
+                "3: Se cifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'ChaCha20-Poly1305/None/NoPadding'\n" +
+                "4: Se descifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'AES/GCM/NoPadding'\n" +
+                "5: Se descifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'AES/ECB/PKCS5Padding'\n" +
+                "6: Se descifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'ChaCha20-Poly1305/None/NoPadding'\n" +
+                "Escriba su elección: ");
 
-        for (String method : methods) {
-            String name_method = method.replace("/", "_");
-            Utilities utilities = new Utilities(method);
-            long start_encrypt = System.currentTimeMillis();
-            byte[] encrypt = utilities.encrypt(data_bytes, key);
-            long finish_encrypt = System.currentTimeMillis();
-            Double timeEncrypt = (finish_encrypt - start_encrypt) / 1000.;
+        InputStreamReader isr = new InputStreamReader(System.in);
+        BufferedReader br = new BufferedReader (isr);
+        String cadena = br.readLine();
 
-            if (encrypt != null) {
-                auxiliar.getImageFromByteArray(encrypt, String.format("image_encrypt_%s.jpg", name_method));
-
-                long start_decrypt = System.currentTimeMillis();
-                byte[] decrypt = utilities.decrypt(encrypt, key);
-                long finish_decrypt = System.currentTimeMillis();
-                Double timeDecrypt = (finish_decrypt - start_decrypt) / 1000.;
-                auxiliar.getImageFromByteArray(decrypt, String.format("image_decrypt_%s.jpg", name_method));
-
-                String string_original = new String(data_bytes);
-                String string_decrypt = new String(decrypt);
-                Boolean equals = string_original.equals(string_decrypt);
-                String result = equals.toString().replaceAll("true", "Sí").replaceAll("false", "No");
-
-                System.out.println("Método utilizado: " + method);
-                System.out.println(String.format("Cadena encriptada ha tardando %s en realizarse", timeEncrypt));
-                System.out.println(String.format("Cadena desencriptada ha tardando %s en realizarse", timeDecrypt));
-                System.out.println(String.format(String.format("¿Original es igual a desencriptado? %s\n", result)));
-            } else {
-                System.err.println(String.format("Unsupported algorithm: %s\n", name_method));
-            }
+        int selected = Integer.parseInt(cadena);
+        List<String> methods = null;
+        switch (selected) {
+            case 0:
+                methods = Arrays.asList("AES/GCM/NoPadding", "AES/ECB/PKCS5Padding", "ChaCha20-Poly1305/None/NoPadding", "RSA");
+                new Auxiliar().executeWithoutDelete(methods);
+                break;
+            case 1:
+                new Auxiliar().executeWithDelete("AES/GCM/NoPadding");
+                break;
+            case 2:
+                new Auxiliar().executeWithDelete("AES/ECB/PKCS5Padding");
+                break;
+            case 3:
+                new Auxiliar().executeWithDelete("ChaCha20-Poly1305/None/NoPadding");
+                break;
+            case 4:
+                new Auxiliar().executeDecrypt("AES/GCM/NoPadding");
+                break;
+            case 5:
+                new Auxiliar().executeDecrypt("AES/ECB/PKCS5Padding");
+                break;
+            case 6:
+                new Auxiliar().executeDecrypt("ChaCha20-Poly1305/None/NoPadding");
+                break;
         }
-
-        long start_encrypt_RSA = System.currentTimeMillis();
-
-        KeyPair pair = generateKeyPair();
-
-        String cipherText = encryptRSA(data, pair.getPublic());
-
-        long finish_encrypt_RSA = System.currentTimeMillis();
-
-        Double timeEncryptRSA = (finish_encrypt_RSA - start_encrypt_RSA) / 1000.;
-
-        long start_decrypt_RSA = System.currentTimeMillis();
-
-        String decipheredMessage = decryptRSA(cipherText, pair.getPrivate());
-
-        long finish_decrypt_RSA = System.currentTimeMillis();
-        Double timeDecryptRSA = (finish_decrypt_RSA - start_decrypt_RSA) / 1000.;
-
-        System.out.println("Método utilizado: RSA-2046");
-        System.out.println(String.format("Cadena encriptada: %s tardando %s en realizarse", cipherText, timeEncryptRSA));
-        System.out.println(String.format("Cadena desencriptada: %s tardando %s en realizarse\n", decipheredMessage, timeDecryptRSA));
-
-
     }
 
 }
