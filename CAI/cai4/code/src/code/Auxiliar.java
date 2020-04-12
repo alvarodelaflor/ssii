@@ -1,3 +1,5 @@
+package code;
+
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
@@ -51,16 +53,16 @@ public class Auxiliar {
 
     }
 
-    public void executeWithoutDelete(List<String> methods) {
+    public void executeWithoutDelete(List<String> methods, String key) {
         //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
         Auxiliar auxiliar = new Auxiliar();
         byte[] data_bytes = auxiliar.readBytesFromFile("./src/images/image.jpg");
-        String key = "mvLBiZsiTbGwrfJB";
+//        String key = "mvLBiZsiTbGwrfJB";
         //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
 
         for (String method : methods) {
             String name_method = method.replace("/", "_");
-            Utilities utilities = new Utilities(method);
+            Utilities utilities = new Utilities(method, key);
             long start_encrypt = System.currentTimeMillis();
             byte[] encrypt = utilities.encrypt(data_bytes, key);
             long finish_encrypt = System.currentTimeMillis();
@@ -90,16 +92,16 @@ public class Auxiliar {
         }
     }
 
-    public void executeWithDelete(String method) {
+    public void executeWithDelete(String method, String key) {
         try {
             //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
             Auxiliar auxiliar = new Auxiliar();
             byte[] data_bytes = auxiliar.readBytesFromFile("./src/imagesTest/image.jpg");
-            String key = "mvLBiZsiTbGwrfJB";
+//            String key = "mvLBiZsiTbGwrfJB";
             //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
 
             String name_method = method.replace("/", "_");
-            Utilities utilities = new Utilities(method);
+            Utilities utilities = new Utilities(method, key);
             long start_encrypt = System.currentTimeMillis();
             byte[] encrypt = utilities.encrypt(data_bytes, key);
             long finish_encrypt = System.currentTimeMillis();
@@ -130,16 +132,16 @@ public class Auxiliar {
         }
     }
 
-    public void executeDecrypt(String method) {
+    public void executeDecrypt(String method, String key) {
         try {
             //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
             Auxiliar auxiliar = new Auxiliar();
             byte[] data_bytes = auxiliar.readBytesFromFile("./src/imagesTest/image.jpg");
-            String key = "mvLBiZsiTbGwrfJB";
+//            String key = "mvLBiZsiTbGwrfJB";
             //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
 
             String name_method = method.replace("/", "_");
-            Utilities utilities = new Utilities(method);
+            Utilities utilities = new Utilities(method, key);
 
             long start_decrypt = System.currentTimeMillis();
             byte[] decrypt = utilities.decrypt(data_bytes, key);
@@ -157,6 +159,12 @@ public class Auxiliar {
 
     public void initProgram() {
         try {
+
+            System.out.println("Introduzca la clave secreta que desee para cifrar y descifrar el archivo");
+            InputStreamReader isr1 = new InputStreamReader(System.in);
+            BufferedReader br1 = new BufferedReader (isr1);
+            String key = br1.readLine();
+
             System.out.println("Seleccine el método que desee entre los distintos casos:\n" +
                     "0: Se ejecutarán todos los cifrados, utilizando la imagen 'image.jpg' de la carpeta ./src/images donde se mostrarán todas las imagenes cifradas y su resultado tras descifrar\n" +
                     "1: Se cifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'AES/GCM/NoPadding'\n" +
@@ -167,34 +175,34 @@ public class Auxiliar {
                     "6: Se descifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'ChaCha20-Poly1305/None/NoPadding'\n" +
                     "Escriba su elección: ");
 
-            InputStreamReader isr = new InputStreamReader(System.in);
-            BufferedReader br = new BufferedReader (isr);
-            String cadena = br.readLine();
+            InputStreamReader isr2 = new InputStreamReader(System.in);
+            BufferedReader br2 = new BufferedReader (isr2);
+            String cadena = br2.readLine();
 
             int selected = Integer.parseInt(cadena);
             List<String> methods = null;
             switch (selected) {
                 case 0:
-                    methods = Arrays.asList("AES/GCM/NoPadding", "AES/ECB/PKCS5Padding", "ChaCha20-Poly1305/None/NoPadding", "RSA");
-                    new Auxiliar().executeWithoutDelete(methods);
+                    methods = Arrays.asList("AES/GCM/NoPadding", "AES/ECB/PKCS5Padding", "ChaCha20-Poly1305/None/NoPadding");
+                    new Auxiliar().executeWithoutDelete(methods, key);
                     break;
                 case 1:
-                    new Auxiliar().executeWithDelete("AES/GCM/NoPadding");
+                    new Auxiliar().executeWithDelete("AES/GCM/NoPadding", key);
                     break;
                 case 2:
-                    new Auxiliar().executeWithDelete("AES/ECB/PKCS5Padding");
+                    new Auxiliar().executeWithDelete("AES/ECB/PKCS5Padding", key);
                     break;
                 case 3:
-                    new Auxiliar().executeWithDelete("ChaCha20-Poly1305/None/NoPadding");
+                    new Auxiliar().executeWithDelete("ChaCha20-Poly1305/None/NoPadding", key);
                     break;
                 case 4:
-                    new Auxiliar().executeDecrypt("AES/GCM/NoPadding");
+                    new Auxiliar().executeDecrypt("AES/GCM/NoPadding", key);
                     break;
                 case 5:
-                    new Auxiliar().executeDecrypt("AES/ECB/PKCS5Padding");
+                    new Auxiliar().executeDecrypt("AES/ECB/PKCS5Padding", key);
                     break;
                 case 6:
-                    new Auxiliar().executeDecrypt("ChaCha20-Poly1305/None/NoPadding");
+                    new Auxiliar().executeDecrypt("ChaCha20-Poly1305/None/NoPadding", key);
                     break;
             }
 

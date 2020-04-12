@@ -1,12 +1,11 @@
+package code;
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyPair;
@@ -15,9 +14,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.List;
 
 public class Utilities {
 
@@ -27,13 +24,13 @@ public class Utilities {
     public final int GCM_TAG_LENGTH = 16;
     byte[] IV = new byte[GCM_IV_LENGTH];
     public GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, IV);
-    public KeyPair pair;
+    public String key;
     public SecretKey secretKey;
 
-    public Utilities(String method) {
+    public Utilities(String method, String key) {
         this.method = method;
-        this.pair = generateKeyPairAux();
         this.secretKey = generateSecretKey();
+        this.key = key;
     }
 
     public SecretKey generateSecretKey() {
@@ -53,19 +50,6 @@ public class Utilities {
         }
         return secretKey;
     }
-
-    public KeyPair generateKeyPairAux() {
-        KeyPair pair = null;
-        try {
-            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-            generator.initialize(2048, new SecureRandom());
-            pair = generator.generateKeyPair();
-        } catch (Exception e) {
-            System.out.println("Exception in generation of KeyPair");
-        }
-        return pair;
-    }
-
 
     public static String encryptRSA(String plainText, PublicKey publicKey) throws Exception {
         Cipher encryptCipher = Cipher.getInstance("RSA");
@@ -92,8 +76,6 @@ public class Utilities {
                 AlgorithmParameterSpec ivParameterSpec = new IvParameterSpec(nonceBytes);
                 SecretKeySpec keySpec2 = new SecretKeySpec(this.secretKey.getEncoded(), "ChaCha20");
                 cipher.init(Cipher.ENCRYPT_MODE, keySpec2, ivParameterSpec);
-            } else if (this.method.equals("RSA")) {
-                cipher.init(Cipher.ENCRYPT_MODE, this.pair.getPublic());
             }
             crypted = cipher.doFinal(input);
         } catch (Exception e) {
@@ -120,8 +102,6 @@ public class Utilities {
                 cipher.init(Cipher.DECRYPT_MODE, skey, gcmParameterSpec);
             } else if (this.method.equals("AES/ECB/PKCS5Padding")) {
                 cipher.init(Cipher.DECRYPT_MODE, skey);
-            } else if (this.method.equals("RSA")) {
-                cipher.init(Cipher.DECRYPT_MODE, this.pair.getPrivate());
             } else if (this.method.equals("ChaCha20-Poly1305/None/NoPadding")) {
                 byte[] nonceBytes = new byte[12];
                 AlgorithmParameterSpec ivParameterSpec = new IvParameterSpec(nonceBytes);
@@ -133,13 +113,5 @@ public class Utilities {
             output = null;
         }
         return output;
-    }
-
-    public static KeyPair generateKeyPair() throws Exception {
-        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-        generator.initialize(2048, new SecureRandom());
-        KeyPair pair = generator.generateKeyPair();
-
-        return pair;
     }
 }
