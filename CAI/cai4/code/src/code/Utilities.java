@@ -8,11 +8,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Base64;
 
@@ -29,24 +25,45 @@ public class Utilities {
 
     public Utilities(String method, String key) {
         this.method = method;
-        this.secretKey = generateSecretKey();
+        if (method.equals("ChaCha20-Poly1305/None/NoPadding") || method.equals("DES/ECB/PKCS5PADDING")) {
+            this.secretKey = generateSecretKey(method);
+        } else {
+            this.secretKey = null;
+        }
         this.key = key;
     }
 
-    public SecretKey generateSecretKey() {
+    public SecretKey generateSecretKey(String methodToDo) {
         SecretKey secretKey = null;
         try {
-            byte[] keyBytes = Files.readAllBytes(Paths.get("./src/key/key"));
+            byte[] keyBytes = null;
+            if (methodToDo.equals("DES/ECB/PKCS5PADDING")) {
+                keyBytes = Files.readAllBytes(Paths.get("./src/key/key1"));
+            } else if (methodToDo.equals("ChaCha20-Poly1305/None/NoPadding")) {
+                keyBytes = Files.readAllBytes(Paths.get("./src/key/key2"));
+            }
             if (keyBytes.length <= 0) {
-                KeyGenerator keyGen = KeyGenerator.getInstance("ChaCha20");
-                secretKey = keyGen.generateKey();
-                byte[] encoded = secretKey.getEncoded();
-                Files.write(Paths.get("./src/key/key"), encoded);
+                KeyGenerator keyGen = null;
+                if (methodToDo.equals("DES/ECB/PKCS5PADDING")) {
+                    keyGen = KeyGenerator.getInstance("DES");
+                    secretKey = keyGen.generateKey();
+                    byte[] encoded = secretKey.getEncoded();
+                    Files.write(Paths.get("./src/key/key1"), encoded);
+                } else if (methodToDo.equals("ChaCha20-Poly1305/None/NoPadding")) {
+                    keyGen = KeyGenerator.getInstance("ChaCha20");
+                    secretKey = keyGen.generateKey();
+                    byte[] encoded = secretKey.getEncoded();
+                    Files.write(Paths.get("./src/key/key2"), encoded);
+                }
             } else {
-                secretKey = new SecretKeySpec(keyBytes, 0, keyBytes.length, "ChaCha20");
+                if (methodToDo.equals("DES/ECB/PKCS5PADDING")) {
+                    secretKey = new SecretKeySpec(keyBytes, 0, keyBytes.length, "DES");
+                } else if (methodToDo.equals("ChaCha20-Poly1305/None/NoPadding")) {
+                    secretKey = new SecretKeySpec(keyBytes, 0, keyBytes.length, "ChaCha20");
+                }
             }
         } catch (Exception e) {
-            System.out.println("An exception occurs while generating a secret key" + e);
+            System.out.println("An exception occurs while generating a secret key1" + e);
         }
         return secretKey;
     }
@@ -76,9 +93,13 @@ public class Utilities {
                 AlgorithmParameterSpec ivParameterSpec = new IvParameterSpec(nonceBytes);
                 SecretKeySpec keySpec2 = new SecretKeySpec(this.secretKey.getEncoded(), "ChaCha20");
                 cipher.init(Cipher.ENCRYPT_MODE, keySpec2, ivParameterSpec);
+            } else if (this.method.equals("DES/ECB/PKCS5PADDING")) {
+                SecretKeySpec keySpec2 = new SecretKeySpec(this.secretKey.getEncoded(), "DES");
+                cipher.init(Cipher.ENCRYPT_MODE, keySpec2);
             }
             crypted = cipher.doFinal(input);
         } catch (Exception e) {
+            System.out.println(e);
             crypted = null;
         }
         return crypted;
@@ -98,6 +119,9 @@ public class Utilities {
                 AlgorithmParameterSpec ivParameterSpec = new IvParameterSpec(nonceBytes);
                 SecretKeySpec keySpec = new SecretKeySpec(this.secretKey.getEncoded(), "ChaCha20");
                 cipher.init(Cipher.DECRYPT_MODE, keySpec, ivParameterSpec);
+            } else if (this.method.equals("DES/ECB/PKCS5PADDING")) {
+                SecretKeySpec keySpec = new SecretKeySpec(this.secretKey.getEncoded(), "DES");
+                cipher.init(Cipher.DECRYPT_MODE, keySpec);
             }
             output = cipher.doFinal(input);
         } catch (Exception e) {

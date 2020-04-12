@@ -59,7 +59,7 @@ public class Auxiliar {
         //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
         Auxiliar auxiliar = new Auxiliar();
         byte[] data_bytes = auxiliar.readBytesFromFile("./src/images/image.jpg");
-//        String key = "mvLBiZsiTbGwrfJB";
+//        String key1 = "mvLBiZsiTbGwrfJB";
         //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
 
         for (String method : methods) {
@@ -99,7 +99,7 @@ public class Auxiliar {
             //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
             Auxiliar auxiliar = new Auxiliar();
             byte[] data_bytes = auxiliar.readBytesFromFile("./src/imagesTest/image.jpg");
-//            String key = "mvLBiZsiTbGwrfJB";
+//            String key1 = "mvLBiZsiTbGwrfJB";
             //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
 
             String name_method = method.replace("/", "_");
@@ -139,7 +139,7 @@ public class Auxiliar {
             //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
             Auxiliar auxiliar = new Auxiliar();
             byte[] data_bytes = auxiliar.readBytesFromFile("./src/imagesTest/image.jpg");
-//            String key = "mvLBiZsiTbGwrfJB";
+//            String key1 = "mvLBiZsiTbGwrfJB";
             //////////////////////////////////////////////////////////// MAIN CLASS////////////////////////////////////////////////////////////
 
             String name_method = method.replace("/", "_");
@@ -183,15 +183,17 @@ public class Auxiliar {
                     "1: Se cifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'AES/GCM/NoPadding'\n" +
                     "2: Se cifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'AES/ECB/PKCS5Padding'\n" +
                     "3: Se cifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'ChaCha20-Poly1305/None/NoPadding'\n" +
-                    "4: Se descifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'AES/GCM/NoPadding'\n" +
-                    "5: Se descifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'AES/ECB/PKCS5Padding'\n" +
-                    "6: Se descifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'ChaCha20-Poly1305/None/NoPadding'\n" +
+                    "4: Se cifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'DES/ECB/PKCS5PADDING'\n" +
+                    "5: Se descifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'AES/GCM/NoPadding'\n" +
+                    "6: Se descifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'AES/ECB/PKCS5Padding'\n" +
+                    "7: Se descifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'ChaCha20-Poly1305/None/NoPadding'\n" +
+                    "8: Se descifrará la imagen 'image.jpg' de la carpeta ./src/imagesTest/ borrando la original usuando 'DES/ECB/PKCS5PADDING'\n" +
                     "Escriba su elección (q para salir): ");
 
             String cadena = "";
             Boolean res = true;
             Integer selected = null;
-            List<Integer> validOptions = Arrays.asList(0, 1, 2, 3, 4, 5, 6);
+            List<Integer> validOptions = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8);
             InputStreamReader isr2 = new InputStreamReader(System.in);
             BufferedReader br2 = new BufferedReader(isr2);
             while (res) {
@@ -215,7 +217,7 @@ public class Auxiliar {
             List<String> methods = null;
             switch (selected) {
                 case 0:
-                    methods = Arrays.asList("AES/GCM/NoPadding", "AES/ECB/PKCS5Padding", "ChaCha20-Poly1305/None/NoPadding");
+                    methods = Arrays.asList("AES/GCM/NoPadding", "AES/ECB/PKCS5Padding", "ChaCha20-Poly1305/None/NoPadding", "DES/ECB/PKCS5PADDING");
                     new Auxiliar().executeWithoutDelete(methods, key);
                     break;
                 case 1:
@@ -228,13 +230,19 @@ public class Auxiliar {
                     new Auxiliar().executeWithDelete("ChaCha20-Poly1305/None/NoPadding", key);
                     break;
                 case 4:
-                    new Auxiliar().executeDecrypt("AES/GCM/NoPadding", key);
+                    new Auxiliar().executeWithDelete("DES/ECB/PKCS5PADDING", key);
                     break;
                 case 5:
-                    new Auxiliar().executeDecrypt("AES/ECB/PKCS5Padding", key);
+                    new Auxiliar().executeDecrypt("AES/GCM/NoPadding", key);
                     break;
                 case 6:
+                    new Auxiliar().executeDecrypt("AES/ECB/PKCS5Padding", key);
+                    break;
+                case 7:
                     new Auxiliar().executeDecrypt("ChaCha20-Poly1305/None/NoPadding", key);
+                    break;
+                case 8:
+                    new Auxiliar().executeDecrypt("DES/ECB/PKCS5PADDING", key);
                     break;
             }
 
@@ -255,7 +263,7 @@ public class Auxiliar {
                 File dest = new File("./src/images/image.jpg");
                 FileUtils.copyFile(source, dest);
                 System.out.println(String.format("Test number %s", i));
-                List<String> methods = Arrays.asList("AES/GCM/NoPadding", "AES/ECB/PKCS5Padding", "ChaCha20-Poly1305/None/NoPadding");
+                List<String> methods = Arrays.asList("AES/GCM/NoPadding", "AES/ECB/PKCS5Padding", "ChaCha20-Poly1305/None/NoPadding", "DES/ECB/PKCS5PADDING");
                 new Auxiliar().executeWithoutDelete(methods, "mvLBiZsiTbGwrfJB");
                 i++;
             }
