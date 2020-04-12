@@ -144,7 +144,7 @@ public class Auxiliar {
         byte[] decrypt = utilities.decrypt(data_bytes, key);
         long finish_decrypt = System.currentTimeMillis();
         Double timeDecrypt = (finish_decrypt - start_decrypt) / 1000.;
-        auxiliar.getImageFromByteArray(decrypt, String.format("image.jpg", name_method), false);
+        auxiliar.getImageFromByteArray(decrypt, String.format("image.jpg", name_method), true);
 
         String string_original = new String(data_bytes);
         String string_decrypt = new String(decrypt);
