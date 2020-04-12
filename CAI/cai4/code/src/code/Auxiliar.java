@@ -247,7 +247,7 @@ public class Auxiliar {
         try {
             Integer i = 0;
             Integer photo = 2;
-            while (i < 2) {
+            while (i < 3) {
                 File file = new File("./src/images/image.jpg");
                 file.delete();
                 File source = new File(String.format("./src/clusterImages/%sk.jpg", photo));
