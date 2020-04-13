@@ -98,7 +98,7 @@ public class Utilities {
                 cipher.init(Cipher.ENCRYPT_MODE, keySpec2);
             }
             crypted = cipher.doFinal(input);
-            new KeyStoreUtilities().makeNewKeystoreEntry(crypted, key);
+//            new KeyStoreUtilities().makeNewKeystoreEntry(crypted, key);
         } catch (Exception e) {
             System.out.println(e);
             crypted = null;
@@ -109,10 +109,10 @@ public class Utilities {
     public byte[] decrypt(byte[] input, String key) {
         byte[] output = null;
         try {
-            if (!key.equals(new KeyStoreUtilities().getPasswordFromKeystore(input))) {
-                System.err.println("Contraseña de descifrado incorrecta");
-                System.exit(1);
-            }
+//            if (!key.equals(new KeyStoreUtilities().getPasswordFromKeystore(input))) {
+//                System.err.println("Contraseña de descifrado incorrecta");
+//                System.exit(1);
+//            }
             SecretKeySpec skey = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance(this.method);
             if (this.method.equals("AES/GCM/NoPadding")) {
