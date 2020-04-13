@@ -62,7 +62,7 @@ public class BYODServer {
                 	if (true) { //COMPROBAR MENSAJE
                         File archivo = new File("msg.txt");
                         BufferedWriter bw = null;
-                        bw = new BufferedWriter(new FileWriter(archivo));
+                        bw = new BufferedWriter(new FileWriter(archivo, true));
                         bw.write(msg + "\n");
                         bw.close();
                 		output.println("Su mensaje se almaceno correctamento.");
