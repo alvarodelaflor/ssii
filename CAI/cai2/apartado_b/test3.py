@@ -15,8 +15,8 @@ def sender(queue, messages):
     """
     for message in messages:
         queue.put(message)
-        time.sleep(0.05)
         print("Sent the message: {}".format(message))
+        time.sleep(0.05)
 
 
 def receiver(queue):
