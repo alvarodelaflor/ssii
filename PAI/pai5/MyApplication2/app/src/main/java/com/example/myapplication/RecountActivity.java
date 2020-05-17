@@ -139,13 +139,20 @@ public class RecountActivity extends AppCompatActivity {
     private void decipherVotes(List<String> cipherVotes) throws NoSuchPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         AES aes = new AES();
         List<String> decipherVotes = new ArrayList<>();
+        List<String> tokens = new ArrayList<>();
         for (String elem : cipherVotes) {
             String aux = aes.desencriptar(elem, "password!");
             showInfo("Comprobando datos");
             if (aux.contains("-TRUE_PASSWORD-")) {
-                decipherVotes.add(aux.split("-TRUE_PASSWORD-")[0]);
+                String token = aux.split("-TRUE_PASSWORD-")[1];
+                if (!tokens.contains(token)) {
+                    String vote = aux.split("-TRUE_PASSWORD-")[0];
+                    decipherVotes.add(vote);
+                } else {
+                    Log.i("INSEGUS", "decipherVotes: try to repeat vote");
+                }
             } else {
-                Log.i("TAG", "decipherVotes: alter vote");
+                Log.i("INSEGUS", "decipherVotes: alter vote");
             }
             if (decipherVotes.size() > 0) {
                 showInfo("Iniciando recuento");
