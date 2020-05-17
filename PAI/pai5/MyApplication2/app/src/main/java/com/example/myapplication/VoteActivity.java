@@ -93,7 +93,7 @@ public class VoteActivity extends AppCompatActivity {
             CheckBox checkBox = options.stream().filter(x -> x.isChecked()).findFirst().orElse(null);
             String userVote = checkBox.getText().toString();
             AES aes = new AES();
-            String userVoteCipher = aes.encriptar(userVote + "-" + token, "password!");
+            String userVoteCipher = aes.encriptar(userVote + "-TRUE_PASSWORD-" + token, "password!");
             Vote vote = new Vote(token, userVoteCipher);
             checkVoteAndSend(vote);
         } else {
