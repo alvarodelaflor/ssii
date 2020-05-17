@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.Objects.Purchase;
 import com.example.myapplication.Objects.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,6 +33,7 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -124,14 +126,14 @@ public class MainActivity extends AppCompatActivity {
         Integer numSillones = Integer.valueOf(inputSillones.getText().toString());
         String key = inputKey.getText().toString();
 
-        if (numCamas > 300) {
-            Toast.makeText(getApplicationContext(), "El número máximo de camas es 300.", Toast.LENGTH_LONG).show();
-        } else if (numMesas > 300) {
-            Toast.makeText(getApplicationContext(), "El número máximo de mesas es 300.", Toast.LENGTH_LONG).show();
-        }else if (numSillas > 300) {
-            Toast.makeText(getApplicationContext(), "El número máximo de sillas es 300.", Toast.LENGTH_LONG).show();
-        } else if (numSillones > 300) {
-            Toast.makeText(getApplicationContext(), "El número máximo de sillones es 300.", Toast.LENGTH_LONG).show();
+        if (numCamas == null || numCamas <= 0 || numCamas > 300) {
+            Toast.makeText(getApplicationContext(), "El número de camas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
+        } else if (numMesas == null || numMesas <= 0 || numMesas > 300) {
+            Toast.makeText(getApplicationContext(), "El número de mesas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
+        }else if (numSillas == null || numSillas <= 0 || numSillas > 300) {
+            Toast.makeText(getApplicationContext(), "El número de sillas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
+        } else if (numSillones == null || numSillones <= 0 || numSillones > 300) {
+            Toast.makeText(getApplicationContext(), "El número de sillones debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
         }else if (key.isEmpty()) {
             Toast.makeText(getApplicationContext(), "La clave es obligatorio.", Toast.LENGTH_LONG).show();
         } else {
@@ -165,7 +167,19 @@ public class MainActivity extends AppCompatActivity {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot scannedTagFirebase : dataSnapshot.getChildren()) {
                         User user = scannedTagFirebase.getValue(User.class);
-                        Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
+                        // Aquí habría que comprobar lo raro que pide en el PDF
+                        if (true) {
+                            Integer numCamas = Integer.valueOf(inputCamas.getText().toString());
+                            Integer numMesas = Integer.valueOf(inputMesas.getText().toString());
+                            Integer numSillas = Integer.valueOf(inputSillas.getText().toString());
+                            Integer numSillones = Integer.valueOf(inputSillones.getText().toString());
+                            Purchase purchase = new Purchase(numCamas, numMesas, numSillas, numSillones, user.getId(), new Date());
+                            DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+                            mFirebaseDatabase.child("purchase").push().setValue(purchase);
+                            Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "No cumple los criterios para enviar un pedido", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 } else {
                     showInfo("No existen ningún usuario con esa clave");
@@ -191,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
         for (User elem : users) {
             mFirebaseDatabase.child("users").push().setValue(elem);
         }
+        mFirebaseDatabase.child("purchase").removeValue();
     }
 
     private User generateUser(String userId) throws NoSuchAlgorithmException {
