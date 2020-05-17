@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         UserAccess user5 = new UserAccess("carferben", "votation2", "2fdasdfaeiwufjiewojfoiejofiwjeoifjwoe");
         UserAccess user6 = new UserAccess("antsalper4", "votation2", "3owierfjweiofoiwejifwoejiwojfoiwjefoi");
         UserAccess user7 = new UserAccess("random", "votation2", "4aiwdjfoweijwoiejfoiwejadofjaoewfjoia");
-        List<UserAccess> users = Arrays.asList(user1, user2, user3, user4, user4, user5, user6, user7);
+        List<UserAccess> users = Arrays.asList(user1, user2, user3, user4, user5, user6, user7);
         mFirebaseDatabase.child("users").removeValue();
         for (UserAccess elem : users) {
             mFirebaseDatabase.child("users").push().setValue(elem);
