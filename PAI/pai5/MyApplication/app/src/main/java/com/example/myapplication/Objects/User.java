@@ -5,15 +5,13 @@ import java.io.Serializable;
 public class User implements Serializable {
     private String id;
     private String publicKey;
-    private String privateKey;
 
     public User() {
     }
 
-    public User(String id, String publicKey, String privateKey) {
+    public User(String id, String publicKey) {
         this.id = id;
         this.publicKey = publicKey;
-        this.privateKey = privateKey;
     }
 
     public String getId() {
@@ -32,11 +30,4 @@ public class User implements Serializable {
         this.publicKey = publicKey;
     }
 
-    public String getPrivateKey() {
-        return privateKey;
-    }
-
-    public void setPrivateKey(String privateKey) {
-        this.privateKey = privateKey;
-    }
 }
