@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private String key = "";
     private EditText inputUsername;
     private Button buttonKey;
+    private TextView keyText;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -164,7 +167,10 @@ public class MainActivity extends AppCompatActivity {
                     builder.append(line);
                 }
                 // Do something with the content in
+                keyText.setTextColor(Color.GREEN);
                 key = builder.toString();
+
+                showInfo("Su clave se ha adjuntado correctamente");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -186,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        keyText = (TextView) findViewById(R.id.testKey);
         buttonKey = (Button) findViewById(R.id.search_key);
         buttonKey.setOnClickListener(new View.OnClickListener() {
             @Override
