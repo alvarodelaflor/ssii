@@ -12,6 +12,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.Objects.User;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -72,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        populate();
 
         // Capturamos el boton de Enviar
         View button = findViewById(R.id.button_send);
@@ -142,6 +148,17 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return  res;
+    }
+
+    private void populate() {
+        DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        User user1 = new User("user1", "publicKey1", "privateKey1");
+        User user2 = new User("user2", "publicKey2", "privateKey2");
+        List<User> users = Arrays.asList(user1, user2);
+        mFirebaseDatabase.child("users").removeValue();
+        for (User elem : users) {
+            mFirebaseDatabase.child("users").push().setValue(elem);
+        }
     }
 
 }
