@@ -11,11 +11,17 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.Objects.Purchase;
 import com.example.myapplication.Objects.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -27,6 +33,7 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -39,6 +46,12 @@ public class MainActivity extends AppCompatActivity {
     // Setup Server information
     protected static String server = "192.168.1.133";
     protected static int port = 7070;
+
+    private EditText inputCamas;
+    private EditText inputMesas;
+    private EditText inputSillas;
+    private EditText inputSillones;
+    private EditText inputKey;
 
     public byte[] CreaFirmaDigital(String s) {
         byte[] res = null;
@@ -101,11 +114,11 @@ public class MainActivity extends AppCompatActivity {
     // Creación de un cuadro de dialogo para confirmar pedido
     private void showDialog() throws Resources.NotFoundException {
 
-        final EditText inputCamas = (EditText) findViewById(R.id.inputCamas);
-        final EditText inputMesas = (EditText) findViewById(R.id.inputMesas);
-        final EditText inputSillas = (EditText) findViewById(R.id.inputSillas);
-        final EditText inputSillones= (EditText) findViewById(R.id.inputSillones);
-        final EditText inputKey= (EditText) findViewById(R.id.inputKey);
+        inputCamas = (EditText) findViewById(R.id.inputCamas);
+        inputMesas = (EditText) findViewById(R.id.inputMesas);
+        inputSillas = (EditText) findViewById(R.id.inputSillas);
+        inputSillones= (EditText) findViewById(R.id.inputSillones);
+        inputKey= (EditText) findViewById(R.id.inputKey);
 
         Integer numCamas = Integer.valueOf(inputCamas.getText().toString());
         Integer numMesas = Integer.valueOf(inputMesas.getText().toString());
@@ -113,14 +126,14 @@ public class MainActivity extends AppCompatActivity {
         Integer numSillones = Integer.valueOf(inputSillones.getText().toString());
         String key = inputKey.getText().toString();
 
-        if (numCamas > 300) {
-            Toast.makeText(getApplicationContext(), "El número máximo de camas es 300.", Toast.LENGTH_LONG).show();
-        } else if (numMesas > 300) {
-            Toast.makeText(getApplicationContext(), "El número máximo de mesas es 300.", Toast.LENGTH_LONG).show();
-        }else if (numSillas > 300) {
-            Toast.makeText(getApplicationContext(), "El número máximo de sillas es 300.", Toast.LENGTH_LONG).show();
-        } else if (numSillones > 300) {
-            Toast.makeText(getApplicationContext(), "El número máximo de sillones es 300.", Toast.LENGTH_LONG).show();
+        if (numCamas == null || numCamas <= 0 || numCamas > 300) {
+            Toast.makeText(getApplicationContext(), "El número de camas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
+        } else if (numMesas == null || numMesas <= 0 || numMesas > 300) {
+            Toast.makeText(getApplicationContext(), "El número de mesas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
+        }else if (numSillas == null || numSillas <= 0 || numSillas > 300) {
+            Toast.makeText(getApplicationContext(), "El número de sillas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
+        } else if (numSillones == null || numSillones <= 0 || numSillones > 300) {
+            Toast.makeText(getApplicationContext(), "El número de sillones debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
         }else if (key.isEmpty()) {
             Toast.makeText(getApplicationContext(), "La clave es obligatorio.", Toast.LENGTH_LONG).show();
         } else {
@@ -132,8 +145,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int whichButton) {
 
                         // COMPROBAR FIRMA
-
-                        Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
+                        checkSign();
+//                        Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
                     }
                 }
                 )
@@ -144,17 +157,55 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void checkSign() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference().child(("users"));
+        Query query = databaseReference.orderByChild("privateKey").equalTo(inputKey.getText().toString());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot scannedTagFirebase : dataSnapshot.getChildren()) {
+                        User user = scannedTagFirebase.getValue(User.class);
+                        // Aquí habría que comprobar lo raro que pide en el PDF
+                        if (true) {
+                            Integer numCamas = Integer.valueOf(inputCamas.getText().toString());
+                            Integer numMesas = Integer.valueOf(inputMesas.getText().toString());
+                            Integer numSillas = Integer.valueOf(inputSillas.getText().toString());
+                            Integer numSillones = Integer.valueOf(inputSillones.getText().toString());
+                            Purchase purchase = new Purchase(numCamas, numMesas, numSillas, numSillones, user.getId(), new Date());
+                            DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+                            mFirebaseDatabase.child("purchase").push().setValue(purchase);
+                            Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "No cumple los criterios para enviar un pedido", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } else {
+                    showInfo("No existen ningún usuario con esa clave");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
 
     private void populate() throws NoSuchAlgorithmException {
         DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
         User user1 = generateUser("user1");
         User user2 = generateUser("user2");
+        user2.setPrivateKey("3");
+        user2.setPublicKey("4");
         List<User> users = Arrays.asList(user1, user2);
         mFirebaseDatabase.child("users").removeValue();
         for (User elem : users) {
             mFirebaseDatabase.child("users").push().setValue(elem);
         }
+        mFirebaseDatabase.child("purchase").removeValue();
     }
 
     private User generateUser(String userId) throws NoSuchAlgorithmException {
@@ -170,9 +221,15 @@ public class MainActivity extends AppCompatActivity {
         KeyPairGenerator generadorRSA = KeyPairGenerator.getInstance("RSA");
         generadorRSA.initialize(1024);
         KeyPair claves = generadorRSA.genKeyPair();
-        res.add(claves.getPrivate().toString());
-        res.add(claves.getPublic().toString());
+//        res.add(claves.getPrivate().toString());
+//        res.add(claves.getPublic().toString());
+        res.add("1");
+        res.add("2");
         return res;
+    }
+
+    private void showInfo(String mensaje) {
+        Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show();
     }
 }
 
