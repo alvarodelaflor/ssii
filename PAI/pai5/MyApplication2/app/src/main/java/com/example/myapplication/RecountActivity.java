@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -140,15 +141,17 @@ public class RecountActivity extends AppCompatActivity {
         List<String> decipherVotes = new ArrayList<>();
         for (String elem : cipherVotes) {
             String aux = aes.desencriptar(elem, "password!");
+            showInfo("Comprobando datos");
             if (aux.contains("-TRUE_PASSWORD-")) {
                 decipherVotes.add(aux.split("-TRUE_PASSWORD-")[0]);
             } else {
-                showInfo("Contraseña incorrecta");
+                Log.i("TAG", "decipherVotes: alter vote");
             }
             if (decipherVotes.size() > 0) {
                 showInfo("Iniciando recuento");
                 initRecount(decipherVotes);
             }
+            showInfo("Finalizada comprobación");
         }
     }
 

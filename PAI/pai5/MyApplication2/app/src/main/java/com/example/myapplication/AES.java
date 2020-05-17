@@ -80,14 +80,17 @@ public class AES {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public String desencriptar(String datosEncriptados, String claveSecreta) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         SecretKeySpec secretKey = this.crearClave(claveSecreta);
+        String datos = "";
+        try {
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
-
-        byte[] bytesEncriptados = Base64.getDecoder().decode(datosEncriptados);
-        byte[] datosDesencriptados = cipher.doFinal(bytesEncriptados);
-        String datos = new String(datosDesencriptados);
-
+            byte[] bytesEncriptados = Base64.getDecoder().decode(datosEncriptados);
+            byte[] datosDesencriptados = cipher.doFinal(bytesEncriptados);
+            datos = new String(datosDesencriptados);
+        } catch (Exception e) {
+            datos = "error";
+        }
         return datos;
     }
 }
