@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -89,59 +90,48 @@ public class MainActivity extends AppCompatActivity {
 
     // Creación de un cuadro de dialogo para confirmar pedido
     private void showDialog() throws Resources.NotFoundException {
-        final CheckBox camas = (CheckBox) findViewById(R.id.checkBox_camas);
-        final CheckBox mesas = (CheckBox) findViewById(R.id.checkBox_mesas);
-        final CheckBox sillas = (CheckBox) findViewById(R.id.checkBox_sillas);
-        final CheckBox sillones = (CheckBox) findViewById(R.id.checkBox_sillones);
 
-        List<CheckBox> buttons = Arrays.asList(camas, mesas, sillas, sillones);
+        final EditText inputCamas = (EditText) findViewById(R.id.inputCamas);
+        final EditText inputMesas = (EditText) findViewById(R.id.inputMesas);
+        final EditText inputSillas = (EditText) findViewById(R.id.inputSillas);
+        final EditText inputSillones= (EditText) findViewById(R.id.inputSillones);
+        final EditText inputKey= (EditText) findViewById(R.id.inputKey);
 
-        if (!checkAnyVote(buttons)) {
-            // Mostramos un mensaje emergente;
-            Toast.makeText(getApplicationContext(), "Selecciona al menos un elemento", Toast.LENGTH_SHORT).show();
+        Integer numCamas = Integer.valueOf(inputCamas.getText().toString());
+        Integer numMesas = Integer.valueOf(inputMesas.getText().toString());
+        Integer numSillas = Integer.valueOf(inputSillas.getText().toString());
+        Integer numSillones = Integer.valueOf(inputSillones.getText().toString());
+        String key = inputKey.getText().toString();
+
+        if (numCamas > 300) {
+            Toast.makeText(getApplicationContext(), "El número máximo de camas es 300.", Toast.LENGTH_LONG).show();
+        } else if (numMesas > 300) {
+            Toast.makeText(getApplicationContext(), "El número máximo de mesas es 300.", Toast.LENGTH_LONG).show();
+        }else if (numSillas > 300) {
+            Toast.makeText(getApplicationContext(), "El número máximo de sillas es 300.", Toast.LENGTH_LONG).show();
+        } else if (numSillones > 300) {
+            Toast.makeText(getApplicationContext(), "El número máximo de sillones es 300.", Toast.LENGTH_LONG).show();
+        }else if (key.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "La clave es obligatorio.", Toast.LENGTH_LONG).show();
         } else {
             new AlertDialog.Builder(this)
-                    .setTitle("Enviar")
-                    .setMessage("Se va a proceder al envio")
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                .setTitle("Enviar")
+                .setMessage("Se va a proceder al envio")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
 
-                                // Catch ok button and send information
-                                public void onClick(DialogInterface dialog, int whichButton) {
+                        // COMPROBAR FIRMA
 
-                                    // 1. Extraer los datos de la vista
-                                    Map<String, Boolean> result = new HashMap<>();
-                                    for (CheckBox elem : buttons) {
-                                        result.put(elem.getText().toString(), elem.isChecked());
-                                    }
-                                    // 2. Firmar los datos
-
-                                    // 3. Enviar los datos
-
-                                    Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                    )
-                    .
-
-                            setNegativeButton(android.R.string.no, null)
-
-                    .
-
-                            show();
+                        Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                )
+                .
+                setNegativeButton(android.R.string.no, null)
+                .
+                show();
         }
     }
-
-    private Boolean checkAnyVote(List<CheckBox> checkBoxes) {
-        Boolean res = false;
-        for (CheckBox elem : checkBoxes) {
-            if (elem.isChecked()) {
-                res = true;
-                break;
-            }
-        }
-        return  res;
-    }
-
 }
+
