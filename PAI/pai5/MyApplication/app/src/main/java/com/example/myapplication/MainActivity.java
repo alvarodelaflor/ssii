@@ -13,6 +13,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.Objects.User;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -74,6 +78,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        try {
+            populate();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
         // Capturamos el boton de Enviar
         View button = findViewById(R.id.button_send);
 
@@ -132,6 +142,37 @@ public class MainActivity extends AppCompatActivity {
                 .
                 show();
         }
+    }
+
+
+
+    private void populate() throws NoSuchAlgorithmException {
+        DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        User user1 = generateUser("user1");
+        User user2 = generateUser("user2");
+        List<User> users = Arrays.asList(user1, user2);
+        mFirebaseDatabase.child("users").removeValue();
+        for (User elem : users) {
+            mFirebaseDatabase.child("users").push().setValue(elem);
+        }
+    }
+
+    private User generateUser(String userId) throws NoSuchAlgorithmException {
+        List<String> claves = generateKey();
+        String privateKey = claves.get(0);
+        String publicKey = claves.get(1);
+        User res = new User(userId, publicKey, privateKey);
+        return res;
+    }
+
+    private List<String> generateKey() throws NoSuchAlgorithmException {
+        List<String> res = new ArrayList<>();
+        KeyPairGenerator generadorRSA = KeyPairGenerator.getInstance("RSA");
+        generadorRSA.initialize(1024);
+        KeyPair claves = generadorRSA.genKeyPair();
+        res.add(claves.getPrivate().toString());
+        res.add(claves.getPublic().toString());
+        return res;
     }
 }
 
