@@ -114,8 +114,8 @@ public class VoteActivity extends AppCompatActivity {
                 } else {
                     DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
                     mFirebaseDatabase.child("votes").push().setValue(vote);
-                    finish();
                     showInfo("Voto emitido correctamente");
+                    finish();
                 }
             }
 

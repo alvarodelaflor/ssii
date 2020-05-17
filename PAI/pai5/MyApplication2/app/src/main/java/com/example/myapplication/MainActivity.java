@@ -78,13 +78,9 @@ public class MainActivity extends AppCompatActivity {
                     if (dataSnapshot.exists()) {
                         for (DataSnapshot scannedTagFirebase : dataSnapshot.getChildren()) {
                             UserAccess userAccess = scannedTagFirebase.getValue(UserAccess.class);
-                            if (userAccess.getVoteId().equals(votationIdAux)) {
-                                Log.i("INSEGUS", "Usuario con acceso");
+                            if (userAccess.getVoteId().equals(votationIdAux) && userAccess.getUserId().equals(userIdAux)) {
                                 String token = userAccess.getToken();
                                 startUserVotation(token, votationIdAux);
-                            } else {
-                                showInfo("Usuario sin acceso");
-                                Log.i("INSEGUS", "Usuario sin acceso");
                             }
                         }
                     } else {
@@ -118,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
                         intent.putExtra("votation", votation);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         getApplicationContext().startActivity(intent);
+                        break;
                     }
                 }
             }
@@ -137,17 +134,21 @@ public class MainActivity extends AppCompatActivity {
     private void populate() {
         DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
         UserAccess user1 = new UserAccess("alvdebon", "votation1", "oasfoajdfoaijdejiewofmoweijiwoefoiewo");
-        UserAccess user2 = new UserAccess("carfenben", "votation1", "afdasdfaeiwufjiewojfoiejofiwjeoifjwoe");
+        UserAccess user2 = new UserAccess("carferben", "votation1", "afdasdfaeiwufjiewojfoiejofiwjeoifjwoe");
         UserAccess user3 = new UserAccess("antsalper4", "votation1", "fowierfjweiofoiwejifwoejiwojfoiwjefoi");
-        UserAccess user4 = new UserAccess("random", "votation2", "oaiwdjfoweijwoiejfoiwejadofjaoewfjoia");
-        List<UserAccess> users = Arrays.asList(user1, user2, user3, user4);
+        UserAccess user4 = new UserAccess("alvdebon", "votation2", "1asfoajdfoaijdejiewofmoweijiwoefoiewo");
+        UserAccess user5 = new UserAccess("carferben", "votation2", "2fdasdfaeiwufjiewojfoiejofiwjeoifjwoe");
+        UserAccess user6 = new UserAccess("antsalper4", "votation2", "3owierfjweiofoiwejifwoejiwojfoiwjefoi");
+        UserAccess user7 = new UserAccess("random", "votation2", "4aiwdjfoweijwoiejfoiwejadofjaoewfjoia");
+        List<UserAccess> users = Arrays.asList(user1, user2, user3, user4, user4, user5, user6, user7);
         mFirebaseDatabase.child("users").removeValue();
         for (UserAccess elem : users) {
             mFirebaseDatabase.child("users").push().setValue(elem);
         }
         mFirebaseDatabase.child("votations").removeValue();
         Votation votation1 = new Votation("Retraso de la feria", "En esta votación tiene que decidir si retrasar la feria a septiembre", Arrays.asList("Sí", "No"), "votation1");
-        List<Votation> votations = Arrays.asList(votation1);
+        Votation votation2 = new Votation("Metología preferida", "En esta votación tiene que decidir cual es su metodología de enseñanda favorita", Arrays.asList("Presencial", "Remota"), "votation2");
+        List<Votation> votations = Arrays.asList(votation1, votation2);
         for (Votation elem: votations) {
             mFirebaseDatabase.child("votations").push().setValue(elem);
         }

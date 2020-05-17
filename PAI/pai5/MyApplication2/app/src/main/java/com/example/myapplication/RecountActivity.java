@@ -62,7 +62,7 @@ public class RecountActivity extends AppCompatActivity {
             String votationIdAux = votationId.getText().toString();
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference databaseReference = database.getReference().child(("users"));
-            Query query = databaseReference.orderByChild("votationId").equalTo(votationIdAux);
+            Query query = databaseReference.orderByChild("voteId").equalTo(votationIdAux);
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -72,10 +72,10 @@ public class RecountActivity extends AppCompatActivity {
                             UserAccess userAccess = scannedTagFirebase.getValue(UserAccess.class);
                             tokens.add(userAccess.getToken());
                         }
-                        if (tokens.size() > 1) {
+                        if (tokens.size() > 0) {
                             searchVotes(tokens);
                         } else {
-                            showInfo("No existe ningún votante en esa votación");
+                            showInfo("No existe ningún votante en esa votación.");
                         }
                     } else {
                         showInfo("No existe ningún votante en esa votación");
@@ -160,30 +160,33 @@ public class RecountActivity extends AppCompatActivity {
                         .collect(Collectors.groupingBy(s -> s))
                         .entrySet()
                         .stream()
-                        // filtrar por los que tienen mas de una cancion por grupo
-                        .filter(e -> e.getValue().size() > 1)
                         .map(e -> e.getKey())
                         .collect(Collectors.toList());
         Map<String, Long> result = new HashMap<>();
-        switch (decipherVotes.size()) {
+        switch (repeatVotes.size()) {
             case 1:
                 result.put(repeatVotes.get(0), decipherVotes.stream().filter(x -> x.equals(repeatVotes.get(0))).count());
+                break;
             case 2:
                 result.put(repeatVotes.get(0), decipherVotes.stream().filter(x -> x.equals(repeatVotes.get(0))).count());
                 result.put(repeatVotes.get(1), decipherVotes.stream().filter(x -> x.equals(repeatVotes.get(1))).count());
+                break;
             default:
                 showInfo("No se ha encontrado ningún voto");
+                break;
         }
-        if (result.size() > 0) {
-            Intent intent = new Intent(getApplicationContext(), VoteActivity.class);
-            intent.putExtra("option1", decipherVotes.get(0));
-            intent.putExtra("option1Value", result.get(decipherVotes.get(0)));
+        if (result.values().size() > 0) {
+            Intent intent = new Intent(getApplicationContext(), ShowResult.class);
+            intent.putExtra("option1", repeatVotes.get(0));
+            intent.putExtra("option1Value", result.get(repeatVotes.get(0)).toString());
             if (result.size() > 1) {
-
+                intent.putExtra("option2", repeatVotes.get(1));
+                intent.putExtra("option2Value", result.get(repeatVotes.get(1)).toString());
             } else {
                 intent.putExtra("option2", "/");
-                intent.putExtra("option2Value", 0);
+                intent.putExtra("option2Value", "0");
             }
+            intent.putExtra("votationId", votationId.getText().toString());
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intent);
         } else {
@@ -194,4 +197,5 @@ public class RecountActivity extends AppCompatActivity {
     private void showInfo(String mensaje) {
         Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show();
     }
+
 }
