@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -11,11 +12,21 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
 import java.util.Map;
+
 
 
 public class MainActivity extends AppCompatActivity {
@@ -23,6 +34,39 @@ public class MainActivity extends AppCompatActivity {
     // Setup Server information
     protected static String server = "192.168.1.133";
     protected static int port = 7070;
+
+    public byte[] CreaFirmaDigital(String s) {
+        byte[] res = null;
+        try {
+            KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DSA");
+            keyPairGen.initialize(2048);
+            KeyPair pair = keyPairGen.generateKeyPair();
+
+            Signature firma = Signature.getInstance("SHA256withECDSA");
+            PrivateKey privatekey= pair.getPrivate();
+
+            firma.initSign(privatekey);
+
+            byte[] bytes = s.getBytes();
+
+            firma.update(bytes);
+
+            res =firma.sign();
+
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+    public Boolean VerificaFirmaDigital(String s, PublicKey key, byte[] signature) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        Boolean res = false;
+        Signature firma = Signature.getInstance("SHA256withECDSA");
+        firma.initVerify(key);
+        firma.update(s.getBytes());
+        res = firma.verify(signature);
+        return res;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
