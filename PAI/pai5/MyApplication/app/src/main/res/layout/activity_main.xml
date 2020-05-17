@@ -18,8 +18,7 @@
             android:textSize="22sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Petición de material"
-            tools:text="Hospital Warehouse APP" />
+            android:text="Petición de material" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -199,19 +198,24 @@
 
         </LinearLayout>
 
+        <Button
+            android:layout_margin="25dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enviar"
+            android:id="@+id/button_send"
+            android:layout_below="@+id/username_ly" />
+
     </LinearLayout>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enviar"
-        android:id="@+id/button_send"
+        android:text="Estado del sistema"
+        android:id="@+id/system_status"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="35dp"
-        android:layout_marginEnd="35dp"
-        android:layout_marginBottom="35dp" />
+        android:layout_alignParentLeft="true"
+        android:layout_margin="25dp" />
 
 
 

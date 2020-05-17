@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.Objects.AccessLog;
 import com.example.myapplication.Objects.Purchase;
 import com.example.myapplication.Objects.User;
 import com.google.firebase.database.DataSnapshot;
@@ -50,6 +51,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -76,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
     private String key = "";
     private EditText inputUsername;
     private Button buttonKey;
+    private Button systemStatus;
     private TextView keyText;
 
 
@@ -193,6 +196,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         keyText = (TextView) findViewById(R.id.testKey);
+        systemStatus = (Button) findViewById(R.id.system_status);
+        systemStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SystemStatusActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(intent);
+            }
+        });
         buttonKey = (Button) findViewById(R.id.search_key);
         buttonKey.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -251,6 +263,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "El número de sillas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
         } else if (numSillones == null || numSillones < 0 || numSillones > 300) {
             Toast.makeText(getApplicationContext(), "El número de sillones debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
+        } else if ((numCamas + numMesas + numSillas + numSillones) == 0) {
+            showInfo("Debe seleccionar al menos un elemento");
         } else if (key.isEmpty()) {
             Toast.makeText(getApplicationContext(), "La clave es obligatorio.", Toast.LENGTH_LONG).show();
         } else if (username == null || username.length() == 0 || username.length() > 26) {
@@ -301,10 +315,12 @@ public class MainActivity extends AppCompatActivity {
                             try {
                                 String dataEncrypt = encrypt("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkcOmzOWI1rSCYvcGFrhW0xrWgGs/8JV/gyG+32aTvTLfF/AbLqrJi+osTSg6scjvyCILOwngd09QLQVyGk/rSY8SuzLmfyHR9uO4lHIYGPZGrnyaUPLuosoCqaGkxFTk5FI7cQPyhKQYgVJxUbjeJmujU8gbmQGw64JY6xKk9/kVCu4LqdNxMDrRMoMFDdqjH9XO+go8K6O8XQEi8mQvISdCGdFRDPPfUBw7TlBYEVJSvLAZPDCO8UkvM8VYvHcvS/ziBrMjzphGt6+y9zo/+cX3w9RebwiFKqXxVZfwBTeb+8wpDKkxyrUCyX51qOeMlJz0s3NiOdlbfCRAA3FBRwIDAQAB", data);
                                 createPurchaseAndPush(user, dataEncrypt, sign);
+                                generateAccessLog(true);
                             } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException e) {
                                 e.printStackTrace();
                             }
                         } else {
+                            generateAccessLog(false);
                             showInfo("La clave es incorrecta");
                         }
                     }
@@ -348,6 +364,31 @@ public class MainActivity extends AppCompatActivity {
         User user2 = generateUser("user2");
         user1.setPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmQj2+NijdXDD7wCTCHOrI1eUfdeuf1cF5yQ6n7iLlVf0ahRkfN6wqYpmeEjt8FNne28h8wnKGIw1EZifQK0DG5Q4LY7XjFECgGniXBbHFJZqnzGP03JpFE1E+KczESb4lUPFVNNNU9fkZNvVZVHO0XJ9XXJAPT2U/KNlyBAk+fsMlIrxlQENPSHnfAHspEHRXBN2JsX5XYx3RbqYrm6PsnY4duOG1eQypJSRQXMpzfkJJZ8DhB3c+r9vGdb6QEdQc202d34wBOjiWREc62ldQyepq2/2uz3+qMPVCFaWyxDkOyrXVwjKRCOyqNiHQQnnnIliQNbfJYajWLtL9j2p7wIDAQAB");
         user2.setPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxhQApw50gyzY+r60kJYvwEya3EbLsxd7+A3bVA9OySluX5lDHaarCCwkPa1JCVqSsInfO5bJEF8BzzhzinAb8DzIHJwPfoX9FlWw8XMGYYyt/lzFgBttL47aWqX6fMyXMoHo6IurzGXxAmofj5R5g21WrwlG1Up2Eb9OtqPH/FwtWQU0zudXruX+wshf3+kMkRXhONivPLaI7/0JzV+wcjg8Eoti34PYRD377DKgAIF+OEi4b5l1rfG5Yy1tMlum4vJjQW2EOS2zMraXEhQ6IGggqXPx7jBp1PRCbTJjokJ546/Y4RkRAKYR05ez1xAu98ObEk2pQn8qx2UO83EN1QIDAQAB");
+
+        Calendar cal1 = Calendar.getInstance();
+        cal1.add(Calendar.MONTH, -1);
+        cal1.add(Calendar.DATE, -1);
+        Date dateAux1 = cal1.getTime();
+        AccessLog accessLog1 = new AccessLog(true, dateAux1);
+        AccessLog accessLog2 = new AccessLog(false, dateAux1);
+        AccessLog accessLog3 = new AccessLog(false, dateAux1);
+
+
+        Calendar cal2 = Calendar.getInstance();
+        cal2.add(Calendar.MONTH, -2);
+        cal2.add(Calendar.DATE, -1);
+        Date dateAux2 = cal2.getTime();
+        AccessLog accessLog4 = new AccessLog(true, dateAux2);
+        AccessLog accessLog5 = new AccessLog(false, dateAux2);
+        AccessLog accessLog6 = new AccessLog(true, dateAux2);
+        AccessLog accessLog7 = new AccessLog(true, dateAux2);
+
+        List<AccessLog> accessLogList = Arrays.asList(accessLog1, accessLog2, accessLog3, accessLog4, accessLog5, accessLog6, accessLog7);
+        mFirebaseDatabase.child("logs").removeValue();
+        for (AccessLog elem : accessLogList) {
+            mFirebaseDatabase.child("logs").push().setValue(elem);
+        }
+
         List<User> users = Arrays.asList(user1, user2);
         mFirebaseDatabase.child("users").removeValue();
         for (User elem : users) {
@@ -380,5 +421,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void showInfo(String mensaje) {
         Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show();
+    }
+
+    private void generateAccessLog(Boolean status) {
+        DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        AccessLog accessLog = new AccessLog(status, new Date());
+        mFirebaseDatabase.child("logs").push().setValue(accessLog);
     }
 }
