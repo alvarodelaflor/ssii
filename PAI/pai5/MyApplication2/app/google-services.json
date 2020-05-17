@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "177239391085",
+    "firebase_url": "https://insegus.firebaseio.com",
+    "project_id": "insegus",
+    "storage_bucket": "insegus.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:177239391085:android:0a2fb005ab3c8c5d2e7864",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "177239391085-pt6kk8j5de3jg693hfff6tv1ao18060k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJSlJMG-fcUnNWdLtsr6vTicZtwz50z38"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "177239391085-pt6kk8j5de3jg693hfff6tv1ao18060k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
