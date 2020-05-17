@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.myapplication.MainActivity">
+
+    <TextView
+        android:gravity="center"
+        android:id="@+id/votation_name"
+        android:textSize="22sp"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nombre de la votación" />
+
+    <TextView
+        android:gravity="center"
+        android:layout_below="@id/votation_name"
+        android:id="@+id/votation_description"
+        android:textSize="16sp"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nombre de la votación" />
+
+    <CheckBox
+        android:id="@+id/option_1"
+        android:layout_margin="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/votation_description"
+        android:text="Opción 1"/>
+
+    <CheckBox
+        android:id="@+id/option_2"
+        android:layout_margin="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/option_1"
+        android:text="Opción 2"/>
+
+    <Button
+        android:id="@+id/send_vote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enviar voto"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"/>
+
+</RelativeLayout>
