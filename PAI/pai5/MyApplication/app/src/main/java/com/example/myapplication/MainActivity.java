@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText inputSillas;
     private EditText inputSillones;
     private EditText inputKey;
+    private EditText inputUsername;
 
     public byte[] CreaFirmaDigital(String s) {
         byte[] res = null;
@@ -119,23 +120,27 @@ public class MainActivity extends AppCompatActivity {
         inputSillas = (EditText) findViewById(R.id.inputSillas);
         inputSillones= (EditText) findViewById(R.id.inputSillones);
         inputKey= (EditText) findViewById(R.id.inputKey);
+        inputUsername = (EditText) findViewById(R.id.input_username);
 
         Integer numCamas = Integer.valueOf(inputCamas.getText().toString());
         Integer numMesas = Integer.valueOf(inputMesas.getText().toString());
         Integer numSillas = Integer.valueOf(inputSillas.getText().toString());
         Integer numSillones = Integer.valueOf(inputSillones.getText().toString());
         String key = inputKey.getText().toString();
+        String username = inputUsername.getText().toString();
 
-        if (numCamas == null || numCamas <= 0 || numCamas > 300) {
+        if (numCamas == null || numCamas < 0 || numCamas > 300) {
             Toast.makeText(getApplicationContext(), "El número de camas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
-        } else if (numMesas == null || numMesas <= 0 || numMesas > 300) {
+        } else if (numMesas == null || numMesas < 0 || numMesas > 300) {
             Toast.makeText(getApplicationContext(), "El número de mesas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
-        }else if (numSillas == null || numSillas <= 0 || numSillas > 300) {
+        }else if (numSillas == null || numSillas < 0 || numSillas > 300) {
             Toast.makeText(getApplicationContext(), "El número de sillas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
-        } else if (numSillones == null || numSillones <= 0 || numSillones > 300) {
+        } else if (numSillones == null || numSillones < 0 || numSillones > 300) {
             Toast.makeText(getApplicationContext(), "El número de sillones debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
         }else if (key.isEmpty()) {
             Toast.makeText(getApplicationContext(), "La clave es obligatorio.", Toast.LENGTH_LONG).show();
+        } else if (username==null || username.length() == 0 || username.length() > 26) {
+            Toast.makeText(getApplicationContext(), "La longitud de nombre de usuario tiene que estar entre 0 y 26 caracteres", Toast.LENGTH_LONG).show();
         } else {
             new AlertDialog.Builder(this)
                 .setTitle("Enviar")
@@ -143,10 +148,8 @@ public class MainActivity extends AppCompatActivity {
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-
-                        // COMPROBAR FIRMA
+                        // En este metodo busco el usuario veo su clave pública y miro si es correcta
                         checkSign();
-//                        Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
                     }
                 }
                 )
@@ -160,25 +163,19 @@ public class MainActivity extends AppCompatActivity {
     private void checkSign() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = database.getReference().child(("users"));
-        Query query = databaseReference.orderByChild("privateKey").equalTo(inputKey.getText().toString());
+        Query query = databaseReference.orderByChild("id").equalTo(inputUsername.getText().toString());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot scannedTagFirebase : dataSnapshot.getChildren()) {
                         User user = scannedTagFirebase.getValue(User.class);
-                        // Aquí habría que comprobar lo raro que pide en el PDF
-                        if (true) {
-                            Integer numCamas = Integer.valueOf(inputCamas.getText().toString());
-                            Integer numMesas = Integer.valueOf(inputMesas.getText().toString());
-                            Integer numSillas = Integer.valueOf(inputSillas.getText().toString());
-                            Integer numSillones = Integer.valueOf(inputSillones.getText().toString());
-                            Purchase purchase = new Purchase(numCamas, numMesas, numSillas, numSillones, user.getId(), new Date());
-                            DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
-                            mFirebaseDatabase.child("purchase").push().setValue(purchase);
-                            Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
+                        // Comprobamos la firma y si es correcta enviamos la compra
+                        Boolean aux = checkValidSign(user.getPublicKey(), inputKey.getText().toString());
+                        if (aux) {
+                            createPurchaseAndPush(user);
                         } else {
-                            Toast.makeText(MainActivity.this, "No cumple los criterios para enviar un pedido", Toast.LENGTH_SHORT).show();
+                            showInfo("La clave es incorrecta");
                         }
                     }
                 } else {
@@ -191,6 +188,23 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public Boolean checkValidSign(String publicKey, String privateKey) {
+        Boolean res = true;
+
+        return res;
+    }
+
+    private void createPurchaseAndPush(User user) {
+            Integer numCamas = Integer.valueOf(inputCamas.getText().toString());
+            Integer numMesas = Integer.valueOf(inputMesas.getText().toString());
+            Integer numSillas = Integer.valueOf(inputSillas.getText().toString());
+            Integer numSillones = Integer.valueOf(inputSillones.getText().toString());
+            Purchase purchase = new Purchase(numCamas, numMesas, numSillas, numSillones, user.getId(), new Date());
+            DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+            mFirebaseDatabase.child("purchase").push().setValue(purchase);
+            Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
     }
 
 
