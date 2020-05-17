@@ -1,11 +1,11 @@
-import java.io.*;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.swing.JOptionPane;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 
 public class generator_user {
-	
+
     public static void main(String[] args) throws IOException {
         File archivo = new File("user.txt");
         BufferedWriter bw = null;

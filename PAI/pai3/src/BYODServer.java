@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 
@@ -22,7 +22,7 @@ public class BYODServer {
         serverSocket = (SSLServerSocket) socketFactory.createServerSocket(7070);;
     }
 
-    // Ejecución del servidor para escuchar peticiones de los clientes
+    // Ejecuciï¿½n del servidor para escuchar peticiones de los clientes
     private void runServer() {
         while (true) {
             // Espera las peticiones del cliente para comprobar mensaje/MAC
@@ -52,12 +52,12 @@ public class BYODServer {
                 }
                 
                 if (!userValid) {
-                    output.println("Lo siento, el nombre de usuario y la contraseña no son válidas");
+                    output.println("Lo siento, el nombre de usuario y la contraseï¿½a no son vï¿½lidas");
                 } else{
                 	if (true) { //COMPROBAR MENSAJE
                         File archivo = new File("msg.txt");
                         BufferedWriter bw = null;
-                        bw = new BufferedWriter(new FileWriter(archivo));
+                        bw = new BufferedWriter(new FileWriter(archivo, true));
                         bw.write(msg + "\n");
                         bw.close();
                 		output.println("Su mensaje se almaceno correctamento.");
@@ -65,12 +65,16 @@ public class BYODServer {
                 		output.println("Lo siento, su mensaje no se almaceno");
                 	}
                 }
-                
+
                 output.close();
                 input.close();
                 socket.close();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
+            } catch (SSLHandshakeException exception) {
+                // Output expected SSLHandshakeExceptions.
+                System.err.println("Error: " + exception);
+            } catch (IOException exception) {
+                // Output unexpected IOExceptions.
+                System.err.println("Error: " + exception);
             }
         }
     }
