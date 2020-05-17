@@ -146,13 +146,11 @@
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp" >
 
-                <EditText
-                    android:id="@+id/inputKey"
+                <Button
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="textPersonName"
-                    android:textSize="18sp" />
+                    android:text="Buscar clave"
+                    android:id="@+id/search_key"/>
             </LinearLayout>
         </LinearLayout>
 

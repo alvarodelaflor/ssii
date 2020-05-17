@@ -2,7 +2,9 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +27,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -58,13 +65,15 @@ public class MainActivity extends AppCompatActivity {
     // Setup Server information
     protected static String server = "192.168.1.133";
     protected static int port = 7070;
-
+    private static final int CHOOSE_FILE_REQUESTCODE = 8777;
+    private static final int PICKFILE_RESULT_CODE = 8778;
     private EditText inputCamas;
     private EditText inputMesas;
     private EditText inputSillas;
     private EditText inputSillones;
-    private EditText inputKey;
+    private String key = "";
     private EditText inputUsername;
+    private Button buttonKey;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -114,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
         KeyPair pair = keyPairGen.generateKeyPair();
 
-        PrivateKey privatekey= pair.getPrivate();
+        PrivateKey privatekey = pair.getPrivate();
         PublicKey publicKey = pair.getPublic();
 
         byte[] encodedPublicKey = publicKey.getEncoded();
@@ -137,10 +146,60 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
+    // And then somewhere, in your activity:
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICKFILE_RESULT_CODE && resultCode == RESULT_OK){
+            Uri content_describer = data.getData();
+            BufferedReader reader = null;
+            try {
+                // open the user-picked file for reading:
+                InputStream in = getContentResolver().openInputStream(content_describer);
+                // now read the content:
+                reader = new BufferedReader(new InputStreamReader(in));
+                String line;
+                StringBuilder builder = new StringBuilder();
+                while ((line = reader.readLine()) != null){
+                    builder.append(line);
+                }
+                // Do something with the content in
+                key = builder.toString();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        buttonKey = (Button) findViewById(R.id.search_key);
+        buttonKey.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+                // Ask specifically for something that can be opened:
+                chooseFile.addCategory(Intent.CATEGORY_OPENABLE);
+                chooseFile.setType("*/*");
+                startActivityForResult(
+                        Intent.createChooser(chooseFile, "Choose a file"),
+                        PICKFILE_RESULT_CODE
+                );
+            }
+        });
 
         try {
             populate();
@@ -168,45 +227,43 @@ public class MainActivity extends AppCompatActivity {
         inputCamas = (EditText) findViewById(R.id.inputCamas);
         inputMesas = (EditText) findViewById(R.id.inputMesas);
         inputSillas = (EditText) findViewById(R.id.inputSillas);
-        inputSillones= (EditText) findViewById(R.id.inputSillones);
-        inputKey= (EditText) findViewById(R.id.inputKey);
+        inputSillones = (EditText) findViewById(R.id.inputSillones);
         inputUsername = (EditText) findViewById(R.id.input_username);
 
         Integer numCamas = Integer.valueOf(inputCamas.getText().toString());
         Integer numMesas = Integer.valueOf(inputMesas.getText().toString());
         Integer numSillas = Integer.valueOf(inputSillas.getText().toString());
         Integer numSillones = Integer.valueOf(inputSillones.getText().toString());
-        String key = inputKey.getText().toString();
         String username = inputUsername.getText().toString();
 
         if (numCamas == null || numCamas < 0 || numCamas > 300) {
             Toast.makeText(getApplicationContext(), "El número de camas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
         } else if (numMesas == null || numMesas < 0 || numMesas > 300) {
             Toast.makeText(getApplicationContext(), "El número de mesas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
-        }else if (numSillas == null || numSillas < 0 || numSillas > 300) {
+        } else if (numSillas == null || numSillas < 0 || numSillas > 300) {
             Toast.makeText(getApplicationContext(), "El número de sillas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
         } else if (numSillones == null || numSillones < 0 || numSillones > 300) {
             Toast.makeText(getApplicationContext(), "El número de sillones debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
-        }else if (key.isEmpty()) {
+        } else if (key.isEmpty()) {
             Toast.makeText(getApplicationContext(), "La clave es obligatorio.", Toast.LENGTH_LONG).show();
-        } else if (username==null || username.length() == 0 || username.length() > 26) {
+        } else if (username == null || username.length() == 0 || username.length() > 26) {
             Toast.makeText(getApplicationContext(), "La longitud de nombre de usuario tiene que estar entre 0 y 26 caracteres", Toast.LENGTH_LONG).show();
         } else {
             new AlertDialog.Builder(this)
-                .setTitle("Enviar")
-                .setMessage("Se va a proceder al envio")
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        // En este metodo busco el usuario veo su clave pública y miro si es correcta
-                        checkSign();
-                    }
-                }
-                )
-                .
-                setNegativeButton(android.R.string.no, null)
-                .
-                show();
+                    .setTitle("Enviar")
+                    .setMessage("Se va a proceder al envio")
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    // En este metodo busco el usuario veo su clave pública y miro si es correcta
+                                    checkSign();
+                                }
+                            }
+                    )
+                    .
+                            setNegativeButton(android.R.string.no, null)
+                    .
+                            show();
         }
     }
 
@@ -226,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
                         User user = scannedTagFirebase.getValue(User.class);
                         // Comprobamos la firma y si es correcta enviamos la compra
                         String data = "numCamas:" + numCamas + "," + "numMesas:" + numMesas + "," + "numSillas:" + numSillas + "," + "numSillones:" + numSillones;
-                        byte[] sign = CreaFirmaDigital(inputKey.getText().toString(),data);
+                        byte[] sign = CreaFirmaDigital(key, data);
                         Boolean aux = null;
                         try {
                             aux = checkValidSign(user.getPublicKey(), data, sign);
@@ -270,11 +327,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createPurchaseAndPush(User user, String data, byte[] signature) {
-            String sign = Base64.getEncoder().encodeToString(signature);
-            Purchase purchase = new Purchase(data,sign);
-            DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
-            mFirebaseDatabase.child("purchase").push().setValue(purchase);
-            Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
+        String sign = Base64.getEncoder().encodeToString(signature);
+        Purchase purchase = new Purchase(data, sign);
+        DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabase.child("purchase").push().setValue(purchase);
+        Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
     }
 
 
