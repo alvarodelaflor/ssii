@@ -5,10 +5,17 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -38,9 +45,14 @@ public class MainActivity extends AppCompatActivity {
 
     // Creación de un cuadro de dialogo para confirmar pedido
     private void showDialog() throws Resources.NotFoundException {
-        CheckBox sabanas = (CheckBox) findViewById(R.id.checkBox_sabanas);
+        final CheckBox camas = (CheckBox) findViewById(R.id.checkBox_camas);
+        final CheckBox mesas = (CheckBox) findViewById(R.id.checkBox_mesas);
+        final CheckBox sillas = (CheckBox) findViewById(R.id.checkBox_sillas);
+        final CheckBox sillones = (CheckBox) findViewById(R.id.checkBox_sillones);
 
-        if (!sabanas.isChecked()) {
+        List<CheckBox> buttons = Arrays.asList(camas, mesas, sillas, sillones);
+
+        if (!checkAnyVote(buttons)) {
             // Mostramos un mensaje emergente;
             Toast.makeText(getApplicationContext(), "Selecciona al menos un elemento", Toast.LENGTH_SHORT).show();
         } else {
@@ -54,7 +66,10 @@ public class MainActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int whichButton) {
 
                                     // 1. Extraer los datos de la vista
-
+                                    Map<String, Boolean> result = new HashMap<>();
+                                    for (CheckBox elem : buttons) {
+                                        result.put(elem.getText().toString(), elem.isChecked());
+                                    }
                                     // 2. Firmar los datos
 
                                     // 3. Enviar los datos
@@ -74,5 +89,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private Boolean checkAnyVote(List<CheckBox> checkBoxes) {
+        Boolean res = false;
+        for (CheckBox elem : checkBoxes) {
+            if (elem.isChecked()) {
+                res = true;
+                break;
+            }
+        }
+        return  res;
+    }
 
 }
