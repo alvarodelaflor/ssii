@@ -3,30 +3,54 @@ package com.example.myapplication;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.Objects.Purchase;
+import com.example.myapplication.Objects.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
 import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import java.util.Map;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -35,27 +59,72 @@ public class MainActivity extends AppCompatActivity {
     protected static String server = "192.168.1.133";
     protected static int port = 7070;
 
-    public byte[] CreaFirmaDigital(String s) {
+    private EditText inputCamas;
+    private EditText inputMesas;
+    private EditText inputSillas;
+    private EditText inputSillones;
+    private EditText inputKey;
+    private EditText inputUsername;
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public byte[] CreaFirmaDigital(String key, String data) {
         byte[] res = null;
         try {
-            KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DSA");
-            keyPairGen.initialize(2048);
-            KeyPair pair = keyPairGen.generateKeyPair();
+            Signature firma = Signature.getInstance("SHA256withRSA");
 
-            Signature firma = Signature.getInstance("SHA256withECDSA");
-            PrivateKey privatekey= pair.getPrivate();
+            byte[] encodedPrivateKey = Base64.getDecoder().decode(key);
 
-            firma.initSign(privatekey);
+            KeyFactory factory = KeyFactory.getInstance("RSA");
+            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(encodedPrivateKey);
+            PrivateKey private_key = factory.generatePrivate(spec);
 
-            byte[] bytes = s.getBytes();
+            firma.initSign(private_key);
+
+            byte[] bytes = data.getBytes();
 
             firma.update(bytes);
 
-            res =firma.sign();
+            res = firma.sign();
 
-        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | InvalidKeySpecException e) {
             e.printStackTrace();
         }
+        return res;
+    }
+
+    public String encrypt(String publicKey, String data) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidKeySpecException {
+        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA256AndMGF1Padding");
+        byte[] bytes = data.getBytes();
+        byte[] encodedPublicKey = Base64.getDecoder().decode(publicKey);
+        KeyFactory factory = KeyFactory.getInstance("RSA");
+        PublicKey public_key = factory.generatePublic(new X509EncodedKeySpec(encodedPublicKey));
+        cipher.init(Cipher.ENCRYPT_MODE, public_key);
+        String res = Base64.getEncoder().encodeToString(cipher.doFinal(bytes));
+        return res;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public List<String> generatePair() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        List<String> res = new ArrayList<>();
+
+        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
+
+        keyPairGen.initialize(2048, new SecureRandom());
+
+        KeyPair pair = keyPairGen.generateKeyPair();
+
+        PrivateKey privatekey= pair.getPrivate();
+        PublicKey publicKey = pair.getPublic();
+
+        byte[] encodedPublicKey = publicKey.getEncoded();
+        String b64PublicKey = Base64.getEncoder().encodeToString(encodedPublicKey);
+
+        byte[] encodedPrivateKey = privatekey.getEncoded();
+        String b64PrivateKey = Base64.getEncoder().encodeToString(encodedPrivateKey);
+
+        res.add(b64PublicKey);
+        res.add(b64PrivateKey);
         return res;
     }
 
@@ -73,6 +142,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        try {
+            populate();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
         // Capturamos el boton de Enviar
         View button = findViewById(R.id.button_send);
 
@@ -89,59 +164,157 @@ public class MainActivity extends AppCompatActivity {
 
     // Creación de un cuadro de dialogo para confirmar pedido
     private void showDialog() throws Resources.NotFoundException {
-        final CheckBox camas = (CheckBox) findViewById(R.id.checkBox_camas);
-        final CheckBox mesas = (CheckBox) findViewById(R.id.checkBox_mesas);
-        final CheckBox sillas = (CheckBox) findViewById(R.id.checkBox_sillas);
-        final CheckBox sillones = (CheckBox) findViewById(R.id.checkBox_sillones);
 
-        List<CheckBox> buttons = Arrays.asList(camas, mesas, sillas, sillones);
+        inputCamas = (EditText) findViewById(R.id.inputCamas);
+        inputMesas = (EditText) findViewById(R.id.inputMesas);
+        inputSillas = (EditText) findViewById(R.id.inputSillas);
+        inputSillones= (EditText) findViewById(R.id.inputSillones);
+        inputKey= (EditText) findViewById(R.id.inputKey);
+        inputUsername = (EditText) findViewById(R.id.input_username);
 
-        if (!checkAnyVote(buttons)) {
-            // Mostramos un mensaje emergente;
-            Toast.makeText(getApplicationContext(), "Selecciona al menos un elemento", Toast.LENGTH_SHORT).show();
+        Integer numCamas = Integer.valueOf(inputCamas.getText().toString());
+        Integer numMesas = Integer.valueOf(inputMesas.getText().toString());
+        Integer numSillas = Integer.valueOf(inputSillas.getText().toString());
+        Integer numSillones = Integer.valueOf(inputSillones.getText().toString());
+        String key = inputKey.getText().toString();
+        String username = inputUsername.getText().toString();
+
+        if (numCamas == null || numCamas < 0 || numCamas > 300) {
+            Toast.makeText(getApplicationContext(), "El número de camas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
+        } else if (numMesas == null || numMesas < 0 || numMesas > 300) {
+            Toast.makeText(getApplicationContext(), "El número de mesas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
+        }else if (numSillas == null || numSillas < 0 || numSillas > 300) {
+            Toast.makeText(getApplicationContext(), "El número de sillas debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
+        } else if (numSillones == null || numSillones < 0 || numSillones > 300) {
+            Toast.makeText(getApplicationContext(), "El número de sillones debe estar entre 0 y 300.", Toast.LENGTH_LONG).show();
+        }else if (key.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "La clave es obligatorio.", Toast.LENGTH_LONG).show();
+        } else if (username==null || username.length() == 0 || username.length() > 26) {
+            Toast.makeText(getApplicationContext(), "La longitud de nombre de usuario tiene que estar entre 0 y 26 caracteres", Toast.LENGTH_LONG).show();
         } else {
             new AlertDialog.Builder(this)
-                    .setTitle("Enviar")
-                    .setMessage("Se va a proceder al envio")
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                .setTitle("Enviar")
+                .setMessage("Se va a proceder al envio")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // En este metodo busco el usuario veo su clave pública y miro si es correcta
+                        checkSign();
+                    }
+                }
+                )
+                .
+                setNegativeButton(android.R.string.no, null)
+                .
+                show();
+        }
+    }
 
-                                // Catch ok button and send information
-                                public void onClick(DialogInterface dialog, int whichButton) {
-
-                                    // 1. Extraer los datos de la vista
-                                    Map<String, Boolean> result = new HashMap<>();
-                                    for (CheckBox elem : buttons) {
-                                        result.put(elem.getText().toString(), elem.isChecked());
-                                    }
-                                    // 2. Firmar los datos
-
-                                    // 3. Enviar los datos
-
-                                    Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
-                                }
+    private void checkSign() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference().child(("users"));
+        Query query = databaseReference.orderByChild("id").equalTo(inputUsername.getText().toString());
+        Integer numCamas = Integer.valueOf(inputCamas.getText().toString());
+        Integer numMesas = Integer.valueOf(inputMesas.getText().toString());
+        Integer numSillas = Integer.valueOf(inputSillas.getText().toString());
+        Integer numSillones = Integer.valueOf(inputSillones.getText().toString());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot scannedTagFirebase : dataSnapshot.getChildren()) {
+                        User user = scannedTagFirebase.getValue(User.class);
+                        // Comprobamos la firma y si es correcta enviamos la compra
+                        String data = "numCamas:" + numCamas + "," + "numMesas:" + numMesas + "," + "numSillas:" + numSillas + "," + "numSillones:" + numSillones;
+                        byte[] sign = CreaFirmaDigital(inputKey.getText().toString(),data);
+                        Boolean aux = null;
+                        try {
+                            aux = checkValidSign(user.getPublicKey(), data, sign);
+                        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeySpecException | InvalidKeyException e) {
+                            e.printStackTrace();
+                        }
+                        if (aux) {
+                            try {
+                                String dataEncrypt = encrypt("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkcOmzOWI1rSCYvcGFrhW0xrWgGs/8JV/gyG+32aTvTLfF/AbLqrJi+osTSg6scjvyCILOwngd09QLQVyGk/rSY8SuzLmfyHR9uO4lHIYGPZGrnyaUPLuosoCqaGkxFTk5FI7cQPyhKQYgVJxUbjeJmujU8gbmQGw64JY6xKk9/kVCu4LqdNxMDrRMoMFDdqjH9XO+go8K6O8XQEi8mQvISdCGdFRDPPfUBw7TlBYEVJSvLAZPDCO8UkvM8VYvHcvS/ziBrMjzphGt6+y9zo/+cX3w9RebwiFKqXxVZfwBTeb+8wpDKkxyrUCyX51qOeMlJz0s3NiOdlbfCRAA3FBRwIDAQAB", data);
+                                createPurchaseAndPush(user, dataEncrypt, sign);
+                            } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException e) {
+                                e.printStackTrace();
                             }
-
-                    )
-                    .
-
-                            setNegativeButton(android.R.string.no, null)
-
-                    .
-
-                            show();
-        }
-    }
-
-    private Boolean checkAnyVote(List<CheckBox> checkBoxes) {
-        Boolean res = false;
-        for (CheckBox elem : checkBoxes) {
-            if (elem.isChecked()) {
-                res = true;
-                break;
+                        } else {
+                            showInfo("La clave es incorrecta");
+                        }
+                    }
+                } else {
+                    showInfo("No existen ningún usuario con esa clave");
+                }
             }
-        }
-        return  res;
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
+    public Boolean checkValidSign(String publicKey, String s, byte[] signature) throws NoSuchAlgorithmException, SignatureException, InvalidKeySpecException, InvalidKeyException {
+        Boolean res = false;
+        Signature firma = Signature.getInstance("SHA256withRSA");
+        byte[] encodedPublicKey = Base64.getDecoder().decode(publicKey);
+        KeyFactory factory = KeyFactory.getInstance("RSA");
+        PublicKey public_key = factory.generatePublic(new X509EncodedKeySpec(encodedPublicKey));
+        firma.initVerify(public_key);
+        firma.update(s.getBytes());
+        res = firma.verify(signature);
+
+        return res;
+    }
+
+    private void createPurchaseAndPush(User user, String data, byte[] signature) {
+            String sign = Base64.getEncoder().encodeToString(signature);
+            Purchase purchase = new Purchase(data,sign);
+            DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+            mFirebaseDatabase.child("purchase").push().setValue(purchase);
+            Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
+    }
+
+
+    private void populate() throws NoSuchAlgorithmException {
+        DatabaseReference mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        User user1 = generateUser("user1");
+        User user2 = generateUser("user2");
+        user1.setPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmQj2+NijdXDD7wCTCHOrI1eUfdeuf1cF5yQ6n7iLlVf0ahRkfN6wqYpmeEjt8FNne28h8wnKGIw1EZifQK0DG5Q4LY7XjFECgGniXBbHFJZqnzGP03JpFE1E+KczESb4lUPFVNNNU9fkZNvVZVHO0XJ9XXJAPT2U/KNlyBAk+fsMlIrxlQENPSHnfAHspEHRXBN2JsX5XYx3RbqYrm6PsnY4duOG1eQypJSRQXMpzfkJJZ8DhB3c+r9vGdb6QEdQc202d34wBOjiWREc62ldQyepq2/2uz3+qMPVCFaWyxDkOyrXVwjKRCOyqNiHQQnnnIliQNbfJYajWLtL9j2p7wIDAQAB");
+        user2.setPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxhQApw50gyzY+r60kJYvwEya3EbLsxd7+A3bVA9OySluX5lDHaarCCwkPa1JCVqSsInfO5bJEF8BzzhzinAb8DzIHJwPfoX9FlWw8XMGYYyt/lzFgBttL47aWqX6fMyXMoHo6IurzGXxAmofj5R5g21WrwlG1Up2Eb9OtqPH/FwtWQU0zudXruX+wshf3+kMkRXhONivPLaI7/0JzV+wcjg8Eoti34PYRD377DKgAIF+OEi4b5l1rfG5Yy1tMlum4vJjQW2EOS2zMraXEhQ6IGggqXPx7jBp1PRCbTJjokJ546/Y4RkRAKYR05ez1xAu98ObEk2pQn8qx2UO83EN1QIDAQAB");
+        List<User> users = Arrays.asList(user1, user2);
+        mFirebaseDatabase.child("users").removeValue();
+        for (User elem : users) {
+            mFirebaseDatabase.child("users").push().setValue(elem);
+        }
+        mFirebaseDatabase.child("purchase").removeValue();
+    }
+
+    private User generateUser(String userId) throws NoSuchAlgorithmException {
+//        List<String> claves = generateKey();
+//        String privateKey = claves.get(0);
+//        String publicKey = claves.get(1);
+        User res = new User(userId, "");
+        return res;
+    }
+/*
+    private List<String> generateKey() throws NoSuchAlgorithmException {
+        List<String> res = new ArrayList<>();
+        KeyPairGenerator generadorRSA = KeyPairGenerator.getInstance("RSA");
+        generadorRSA.initialize(1024);
+        KeyPair claves = generadorRSA.genKeyPair();
+//        res.add(claves.getPrivate().toString());
+//        res.add(claves.getPublic().toString());
+        res.add("1");
+        res.add("2");
+        return res;
+    }
+
+ */
+
+    private void showInfo(String mensaje) {
+        Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show();
+    }
 }
