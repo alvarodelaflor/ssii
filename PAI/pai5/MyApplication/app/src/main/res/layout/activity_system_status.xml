@@ -15,80 +15,95 @@
             android:gravity="center"
             android:id="@+id/textView"
             android:textSize="22sp"
+            android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Estado del sistema" />
 
-        <LinearLayout
-            android:layout_marginTop="50dp"
+        <TextView
+            android:gravity="center"
+            android:id="@+id/info"
+            android:layout_margin="5dp"
+            android:textSize="17sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="A continuaición se mostrará el ratio de los distintos acceso al sistema por cada mes siguiendo la estructura: \n\npeticiones correctas / peticiones totales" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_margin="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textStyle="bold"
                 android:text="Ratio este mes: "
                 android:textSize="20sp"/>
 
             <TextView
                 android:id="@+id/ratio_cero_before"
-                android:layout_marginTop="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1"
+                android:textStyle="italic"
                 android:textSize="20sp"/>
 
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="50dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:gravity="center"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_margin="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textStyle="bold"
                 android:text="Ratio hace 1 mes: "
                 android:textSize="20sp"/>
 
             <TextView
                 android:id="@+id/ratio_one_before"
-                android:layout_marginTop="20dp"
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textStyle="italic"
                 android:text="1"
                 android:textSize="20sp"/>
 
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="50dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:gravity="center"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_margin="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textStyle="bold"
                 android:text="Ratio hace 2 meses: "
                 android:textSize="20sp"/>
 
             <TextView
                 android:id="@+id/ratio_two_before"
-                android:layout_marginTop="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1"
+                android:textStyle="italic"
                 android:textSize="20sp"/>
 
         </LinearLayout>
 
         <TextView
+            android:layout_marginTop="20dp"
             android:id="@+id/tendencia"
             android:textAlignment="center"
             android:layout_width="match_parent"
@@ -96,9 +111,4 @@
             android:textSize="20sp"
             android:text="TENDENCIA POSITIVA"/>
     </LinearLayout>
-
-
-
-
-
 </RelativeLayout>

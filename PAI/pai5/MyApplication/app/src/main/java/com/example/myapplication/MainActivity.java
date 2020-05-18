@@ -325,6 +325,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 } else {
+                    generateAccessLog(false);
                     showInfo("No existen ningún usuario con esa clave");
                 }
             }
@@ -371,7 +372,7 @@ public class MainActivity extends AppCompatActivity {
         Date dateAux1 = cal1.getTime();
         AccessLog accessLog1 = new AccessLog(true, dateAux1);
         AccessLog accessLog2 = new AccessLog(false, dateAux1);
-        AccessLog accessLog3 = new AccessLog(false, dateAux1);
+        AccessLog accessLog3 = new AccessLog(true, dateAux1);
 
 
         Calendar cal2 = Calendar.getInstance();
@@ -381,9 +382,10 @@ public class MainActivity extends AppCompatActivity {
         AccessLog accessLog4 = new AccessLog(true, dateAux2);
         AccessLog accessLog5 = new AccessLog(false, dateAux2);
         AccessLog accessLog6 = new AccessLog(true, dateAux2);
-        AccessLog accessLog7 = new AccessLog(true, dateAux2);
+//        AccessLog accessLog7 = new AccessLog(true, dateAux2);
 
-        List<AccessLog> accessLogList = Arrays.asList(accessLog1, accessLog2, accessLog3, accessLog4, accessLog5, accessLog6, accessLog7);
+//        List<AccessLog> accessLogList = Arrays.asList(accessLog1, accessLog2, accessLog3, accessLog4, accessLog5, accessLog6, accessLog7);
+        List<AccessLog> accessLogList = Arrays.asList(accessLog1, accessLog2, accessLog3, accessLog4, accessLog5, accessLog6);
         mFirebaseDatabase.child("logs").removeValue();
         for (AccessLog elem : accessLogList) {
             mFirebaseDatabase.child("logs").push().setValue(elem);

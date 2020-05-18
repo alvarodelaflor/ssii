@@ -81,7 +81,11 @@ public class SystemStatusActivity extends AppCompatActivity {
         if (thisMonthAccess.size() > 0) {
             Long trueAccess = thisMonthAccess.stream().filter(x -> x.getStatus().equals(true)).count();
             Double ratio0 = (trueAccess * 1.) / thisMonthAccess.size();
-            ratio0Before.setText(ratio0.toString());
+            String ratio0String = ratio0.toString();
+            if (ratio0String.length() > 3) {
+                ratio0String = ratio0String.substring(0, 4);
+            }
+            ratio0Before.setText(ratio0String);
         } else {
             ratio0Before.setText("1.0");
         }
@@ -93,7 +97,11 @@ public class SystemStatusActivity extends AppCompatActivity {
         if (oneMonthBeforeAccess.size() > 0) {
             Long trueAccess = oneMonthBeforeAccess.stream().filter(x -> x.getStatus().equals(true)).count();
             Double ratio1 = (trueAccess * 1.) / oneMonthBeforeAccess.size();
-            ratio1Before.setText(ratio1.toString());
+            String ratio1String = ratio1.toString();
+            if (ratio1String.length() > 3) {
+                ratio1String = ratio1String.substring(0, 4);
+            }
+            ratio1Before.setText(ratio1String);
         } else {
             ratio0Before.setText("1.0");
         }
@@ -105,7 +113,11 @@ public class SystemStatusActivity extends AppCompatActivity {
         if (twoMonthBeforeAccess.size() > 0) {
             Long trueAccess = twoMonthBeforeAccess.stream().filter(x -> x.getStatus().equals(true)).count();
             Double ratio2 = (trueAccess * 1.) / twoMonthBeforeAccess.size();
-            ratio2Before.setText(ratio2.toString());
+            String ratio2String = ratio2.toString();
+            if (ratio2String.length() > 3) {
+                ratio2String = ratio2String.substring(0, 4);
+            }
+            ratio2Before.setText(ratio2String);
         } else {
             ratio0Before.setText("1.0");
         }
@@ -120,7 +132,7 @@ public class SystemStatusActivity extends AppCompatActivity {
         } else if (actual < one || actual < two) {
             tendencia.setText("TENDENCIA NEGATIVA");
             tendencia.setTextColor(Color.RED);
-        } else if (actual == one && actual == two) {
+        } else if (actual.equals(one) && actual.equals(two)) {
             tendencia.setText("TENDENCIA NULA");
             tendencia.setTextColor(Color.BLUE);
         }
