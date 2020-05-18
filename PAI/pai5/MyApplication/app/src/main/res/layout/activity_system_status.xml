@@ -27,7 +27,7 @@
             android:textSize="17sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="A continuaición se mostrará el ratio de los distintos acceso al sistema por cada mes siguiendo la estructura: \n\npeticiones correctas / peticiones totales" />
+            android:text="A continuación se mostrará el ratio de los distintos acceso al sistema por cada mes siguiendo la estructura: \n\npeticiones correctas / peticiones totales" />
 
         <LinearLayout
             android:layout_width="match_parent"
