@@ -13,21 +13,19 @@ public class Auxiliar {
         Map<Task, Set<User>> res = new HashMap<>();
         List<User> usersList = users.stream().collect(Collectors.toList());
         for (Task task : tasks) {
+            int low = 0;
+            int high = usersList.size() - 1;
             if (!task.getName().equals("T4")) {
                 Random r = new Random();
-                int low = 0;
-                int high = usersList.size() - 1;
-                int result = r.nextInt(high-low) + low;
+                int result = r.nextInt(high - low) + low;
                 Set<User> aux = new HashSet<>();
                 aux.add(usersList.get(result));
                 res.put(task, aux);
             } else {
                 Random r1 = new Random();
                 Random r2 = new Random();
-                int low = 0;
-                int high = usersList.size() - 1;
-                int result1 = r1.nextInt(high-low) + low;
-                int result2 = r2.nextInt(high-low) + low;
+                int result1 = r1.nextInt(high - low) + low;
+                int result2 = r2.nextInt(high - low) + low;
                 Set<User> aux = new HashSet<>();
                 aux.add(usersList.get(result1));
                 aux.add(usersList.get(result2));
@@ -38,16 +36,24 @@ public class Auxiliar {
     }
 
 
-    public static Boolean validateResult(Map<Task, Set<User>> result, Set<Position> positions){
+    public static Boolean validateResult(Set<Map<Task, Set<User>>> maps, Map<Task, Set<User>> result, Set<Position> positions) {
         Boolean res = true;
 
+        if (maps.contains(result)) {
+            return false;
+        }
+
+        Set<User> totalUser = new HashSet<>();
+
         for (Task task : result.keySet()) {
+            totalUser.addAll(result.get(task));
             // RESTRICTION R0
-            User user = result.get(task).stream().findFirst().orElse(null);
-            Boolean checkUser = validateAllowUserToTask(user, task, positions);
-            if (!checkUser) {
-                res = false;
-                break;
+            Set<User> users = result.get(task);
+            for (User user : users) {
+                Boolean checkUser = validateAllowUserToTask(user, task, positions);
+                if (!checkUser) {
+                    return false;
+                }
             }
         }
 
@@ -58,10 +64,10 @@ public class Auxiliar {
             User user1 = result.get(t21).stream().findFirst().orElse(null);
             User user2 = result.get(t22).stream().findFirst().orElse(null);
             if (user1.equals(user2)) {
-                res = false;
+                return false;
             }
         } else {
-            res = false;
+            return false;
         }
 
         // RESTRICTION R2
@@ -77,17 +83,24 @@ public class Auxiliar {
                 }
             }
             if (user3.equals(user4) || check) {
-                res = false;
+                return false;
+            }
+            if ((!user3.getName().equals("MFE") && !user4.getName().equals("MFE")) || (!user3.getName().equals("JVG") && !user4.getName().equals("JVG"))) {
+                return false;
             }
         } else {
-            res = false;
+            return false;
         }
 
         // RESTRICTION R3
-        Boolean check1 = result.get(t21).equals("GTR");
-        Boolean check2 = !result.get(t22).equals("MDS");
-        if (check1 && check2) {
-            res = false;
+        User user1 = result.get(t21).stream().findAny().orElse(null);
+        Boolean check1 = user1.getName().equals("GTR");
+        if (check1) {
+            User user2 = result.get(t22).stream().findAny().orElse(null);
+            Boolean check2 = !user2.getName().equals("MDS");
+            if (check2) {
+                return false;
+            }
         }
 
         int count = 0;
@@ -100,17 +113,20 @@ public class Auxiliar {
 
             // RESTRICTION SIZE
             if (!elem.getName().equals("T4") && result.get(elem).size() > 1) {
-                res = false;
+                return false;
             } else if (elem.getName().equals("T4") && result.get(elem).size() != 2) {
-                res = false;
+                return false;
             }
         }
         if (count > 1) {
-            res = false;
+            return false;
         }
 
         // RESTRICTION R5
-        // TODO
+        Integer number = result.values().size();
+        if (totalUser.size() != 6) {
+            return false;
+        }
 
         return res;
     }
@@ -126,17 +142,18 @@ public class Auxiliar {
         Boolean res = false;
         Set<Position> allowPositions = new HashSet<>();
         allowPositions.addAll(task.getGradesAllow());
-        Set<Position> positionsAuxUser = new HashSet<>();
-        positionsAuxUser.addAll(user.getPositions());
 
-        Set<Position> copy = new HashSet<>(positionsAuxUser);
+        Set<Position> copy = new HashSet<>(allowPositions);
         for (Position elem : copy) {
             addAllDad(elem, allowPositions);
         }
 
-        for (Position elem : positionsAuxUser) {
+        for (Position elem : user.getPositions()) {
             if (allowPositions.contains(elem)) {
                 res = true;
+                if (user.getName().equals("RGB") && task.getName().equals("T4")) {
+                    System.out.println();
+                }
                 break;
             }
         }
@@ -207,7 +224,8 @@ public class Auxiliar {
         return res;
     }
 
-    public static void runTest(Integer maxIntent, Boolean print) {
+    public static void runTest(Integer maxIntent, Boolean blindSearch, Boolean print, Boolean printPercent) {
+        System.out.println("Prueba iniciada\n");
         Set<Position> positions = getAllPositions();
         Set<User> users = getAllUsers(positions);
         Set<Task> tasks = getAllTasks(positions);
@@ -215,26 +233,71 @@ public class Auxiliar {
         int count = 0;
         while (count < maxIntent && result.size() < 20) {
             Map<Task, Set<User>> aux = Auxiliar.getResult(tasks, users);
-            if (Auxiliar.validateResult(aux, positions)) {
+            if (Auxiliar.validateResult(result, aux, positions)) {
+                System.out.println("\n");
                 result.add(aux);
-            } else if (print){
+                printResult(aux);
+            } else if (print) {
                 printResult(aux);
             }
+            if (printPercent) {
+                if (blindSearch) {
+                    progressPercentage(result.size(), 20);
+                } else {
+                    progressPercentage(count, maxIntent);
+                }
+            }
             count = count + 1;
+            if (blindSearch) {
+                count = 0;
+            }
         }
-        if (result.size()>0) {
-            System.out.println("NUMBER OF VALID RESULT: " + result.size() + "\n");
-            result.stream().forEach(x -> printResult(x));
+        if (result.size() > 0) {
+            System.out.println("\nNUMBER OF VALID RESULT: " + result.size() + "\n");
         } else {
-            System.out.println("NO RESULT");
+            System.out.println("\nNO RESULT");
+        }
+
+        System.out.println("\nPrueba finalizada");
+    }
+
+    public static void progressPercentage(int done, int total) {
+        int size = 5;
+        String iconLeftBoundary = "[";
+        String iconDone = "=";
+        String iconRemain = ".";
+        String iconRightBoundary = "]";
+
+        if (done > total) {
+            throw new IllegalArgumentException();
+        }
+        int donePercents = (100 * done) / total;
+        int doneLength = size * donePercents / 100;
+
+        StringBuilder bar = new StringBuilder(iconLeftBoundary);
+        for (int i = 0; i < size; i++) {
+            if (i < doneLength) {
+                bar.append(iconDone);
+            } else {
+                bar.append(iconRemain);
+            }
+        }
+        bar.append(iconRightBoundary);
+
+        System.out.print("\r" + bar + " " + donePercents + "%");
+
+        if (done == total) {
+            System.out.print("\n");
         }
     }
 
     public static void printResult(Map<Task, Set<User>> result) {
         System.out.println("--------------RESULT--------------");
-        for (Task elem : result.keySet()) {
+        List<Task> taskListOrder = result.keySet().stream().collect(Collectors.toList());
+        taskListOrder.sort(Comparator.comparing(Task::getName));
+        for (Task elem : taskListOrder) {
             System.out.println("Tarea: " + elem + " usuarios: " + result.get(elem));
         }
-        System.out.println("--------------RESULT--------------");
+        System.out.println("--------------RESULT--------------\n");
     }
 }
