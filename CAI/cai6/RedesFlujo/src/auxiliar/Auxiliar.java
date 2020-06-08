@@ -14,7 +14,7 @@ public class Auxiliar {
         List<User> usersList = users.stream().collect(Collectors.toList());
         for (Task task : tasks) {
             int low = 0;
-            int high = usersList.size() - 1;
+            int high = usersList.size();
             if (!task.getName().equals("T4")) {
                 Random r = new Random();
                 int result = r.nextInt(high - low) + low;
@@ -26,6 +26,9 @@ public class Auxiliar {
                 Random r2 = new Random();
                 int result1 = r1.nextInt(high - low) + low;
                 int result2 = r2.nextInt(high - low) + low;
+                while (result2 == result1) {
+                    result2 = r2.nextInt(high - low) + low;
+                }
                 Set<User> aux = new HashSet<>();
                 aux.add(usersList.get(result1));
                 aux.add(usersList.get(result2));
@@ -61,9 +64,9 @@ public class Auxiliar {
         Task t21 = result.keySet().stream().filter(x -> x.getName().equals("T2.1")).findFirst().orElse(null);
         Task t22 = result.keySet().stream().filter(x -> x.getName().equals("T2.2")).findFirst().orElse(null);
         if (t21 != null && t22 != null) {
-            User user1 = result.get(t21).stream().findFirst().orElse(null);
-            User user2 = result.get(t22).stream().findFirst().orElse(null);
-            if (user1.equals(user2)) {
+            User user2 = result.get(t21).stream().findFirst().orElse(null);
+            User user3 = result.get(t22).stream().findFirst().orElse(null);
+            if (user2.equals(user3)) {
                 return false;
             }
         } else {
@@ -74,18 +77,18 @@ public class Auxiliar {
         Task t3 = result.keySet().stream().filter(x -> x.getName().equals("T3")).findFirst().orElse(null);
         Task t4 = result.keySet().stream().filter(x -> x.getName().equals("T4")).findFirst().orElse(null);
         if (t3 != null && t4 != null) {
-            User user3 = result.get(t3).stream().findFirst().orElse(null);
-            User user4 = result.get(t4).stream().findFirst().orElse(null);
-            Boolean check = false;
-            for (Position elem1 : user3.getPositions()) {
-                if (user4.getPositions().contains(elem1)) {
-                    check = true;
-                }
+            User user4 = result.get(t3).stream().findFirst().orElse(null);
+            User user5 = result.get(t4).stream().collect(Collectors.toList()).get(0);
+            User user6 = result.get(t4).stream().collect(Collectors.toList()).get(1);
+            Set<Position> check = new HashSet<>();
+            Boolean checkResult = false;
+            check.addAll(user4.getPositions());
+            check.addAll(user5.getPositions());
+            check.addAll(user6.getPositions());
+            if (check.size() < 3) {
+                checkResult = true;
             }
-            if (user3.equals(user4) || check) {
-                return false;
-            }
-            if ((!user3.getName().equals("MFE") && !user4.getName().equals("MFE")) || (!user3.getName().equals("JVG") && !user4.getName().equals("JVG"))) {
+            if (user4.equals(user5) || user4.equals(user6) || user5.equals(user6) || checkResult) {
                 return false;
             }
         } else {
@@ -151,9 +154,6 @@ public class Auxiliar {
         for (Position elem : user.getPositions()) {
             if (allowPositions.contains(elem)) {
                 res = true;
-                if (user.getName().equals("RGB") && task.getName().equals("T4")) {
-                    System.out.println();
-                }
                 break;
             }
         }
@@ -231,14 +231,15 @@ public class Auxiliar {
         Set<Task> tasks = getAllTasks(positions);
         Set<Map<Task, Set<User>>> result = new HashSet<>();
         int count = 0;
-        while (count < maxIntent && result.size() < 20) {
+        Boolean stop = true;
+        while (stop) {
             Map<Task, Set<User>> aux = Auxiliar.getResult(tasks, users);
             if (Auxiliar.validateResult(result, aux, positions)) {
                 System.out.println("\n");
                 result.add(aux);
-                printResult(aux);
+                printResult(aux, String.valueOf(result.size()));
             } else if (print) {
-                printResult(aux);
+                printResult(aux, "NO VALID");
             }
             if (printPercent) {
                 if (blindSearch) {
@@ -248,9 +249,7 @@ public class Auxiliar {
                 }
             }
             count = count + 1;
-            if (blindSearch) {
-                count = 0;
-            }
+            stop = blindSearch ? result.size() < 20 : count < maxIntent;
         }
         if (result.size() > 0) {
             System.out.println("\nNUMBER OF VALID RESULT: " + result.size() + "\n");
@@ -291,13 +290,44 @@ public class Auxiliar {
         }
     }
 
-    public static void printResult(Map<Task, Set<User>> result) {
-        System.out.println("--------------RESULT--------------");
+    public static void printResult(Map<Task, Set<User>> result, String info) {
+        System.out.println("-------------------------------------- RESULT " + info + " --------------------------------------");
         List<Task> taskListOrder = result.keySet().stream().collect(Collectors.toList());
         taskListOrder.sort(Comparator.comparing(Task::getName));
         for (Task elem : taskListOrder) {
             System.out.println("Tarea: " + elem + " usuarios: " + result.get(elem));
         }
-        System.out.println("--------------RESULT--------------\n");
+        System.out.println("---------------------------------------------------------------------------------------\n");
+    }
+
+    public static void testExamplePDF() {
+        Set<Position> positions = Auxiliar.getAllPositions();
+
+        Task t1 = new Task("T1", positions.stream().filter(x -> x.getInitials().equals("DR")).collect(Collectors.toSet()));
+        Task t21 = new Task("T2.1", positions.stream().filter(x -> x.getInitials().equals("TR")).collect(Collectors.toSet()));
+        Task t22 = new Task("T2.2", positions.stream().filter(x -> x.getInitials().equals("TC")).collect(Collectors.toSet()));
+        Task t3 = new Task("T3", positions.stream().filter(x -> x.getInitials().equals("DM")).collect(Collectors.toSet()));
+        Task t4 = new Task("T4", positions.stream().filter(x -> x.getInitials().equals("DE") || x.getInitials().equals("PS")).collect(Collectors.toSet()));
+
+        User jvg = new User("JVG", positions.stream().filter(x -> x.getInitials().equals("DG")).collect(Collectors.toSet()));
+        User hyv = new User("HYV", positions.stream().filter(x -> x.getInitials().equals("DR") || x.getInitials().equals("TR")).collect(Collectors.toSet()));
+        User pgr = new User("PGR", positions.stream().filter(x -> x.getInitials().equals("DM") || x.getInitials().equals("PS")).collect(Collectors.toSet()));
+        User mfe = new User("MFE", positions.stream().filter(x -> x.getInitials().equals("DE")).collect(Collectors.toSet()));
+        User gtr = new User("GTR", positions.stream().filter(x -> x.getInitials().equals("TR")).collect(Collectors.toSet()));
+        User lpg = new User("LPG", positions.stream().filter(x -> x.getInitials().equals("TR") || x.getInitials().equals("TC")).collect(Collectors.toSet()));
+        User rgb = new User("RGB", positions.stream().filter(x -> x.getInitials().equals("TR") || x.getInitials().equals("TC")).collect(Collectors.toSet()));
+        User bjc = new User("BJC", positions.stream().filter(x -> x.getInitials().equals("TR")).collect(Collectors.toSet()));
+        User mds = new User("MDS", positions.stream().filter(x -> x.getInitials().equals("TC")).collect(Collectors.toSet()));
+        User hjr = new User("HJR", positions.stream().filter(x -> x.getInitials().equals("PS")).collect(Collectors.toSet()));
+        User ihp = new User("IHP", positions.stream().filter(x -> x.getInitials().equals("PS")).collect(Collectors.toSet()));
+
+        Map<Task, Set<User>> solution = new HashMap<>();
+        solution.put(t1, new HashSet<>(Arrays.asList(jvg)));
+        solution.put(t21, new HashSet<>(Arrays.asList(gtr)));
+        solution.put(t22, new HashSet<>(Arrays.asList(mds)));
+        solution.put(t3, new HashSet<>(Arrays.asList(pgr)));
+        solution.put(t4, new HashSet<>(Arrays.asList(mfe, hjr)));
+
+        System.out.println(Auxiliar.validateResult(new HashSet<>(), solution, positions));
     }
 }
