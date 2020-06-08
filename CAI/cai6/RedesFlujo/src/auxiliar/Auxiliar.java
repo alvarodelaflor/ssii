@@ -163,7 +163,6 @@ public class Auxiliar {
     }
 
     public static Set<Position> getAllPositions() {
-        Set<Position> res = new HashSet<>();
         Position dg = new Position("Director General", "DG", null, 0);
         Position dr = new Position("Director de Recursos Sanitarias", "DR", dg, 1);
         Position tr = new Position("Personal Técnico de Recursos", "TR", dr, 2);
@@ -171,28 +170,17 @@ public class Auxiliar {
         Position dm = new Position("Director Médico", "DM", dg, 1);
         Position ps = new Position("Personal Sanitario", "PS", dm, 2);
         Position de = new Position("Director de Gestión Económica", "DE", dg, 1);
-        res.add(dg);
-        res.add(dr);
-        res.add(tr);
-        res.add(tc);
-        res.add(dm);
-        res.add(ps);
-        res.add(de);
+        Set<Position> res = new HashSet<>(Arrays.asList(dg, dr, tr, tc, dm, ps, de));
         return res;
     }
 
     public static Set<Task> getAllTasks(Set<Position> positions) {
-        Set<Task> res = new HashSet<>();
         Task t1 = new Task("T1", positions.stream().filter(x -> x.getInitials().equals("DR")).collect(Collectors.toSet()));
         Task t21 = new Task("T2.1", positions.stream().filter(x -> x.getInitials().equals("TR")).collect(Collectors.toSet()));
         Task t22 = new Task("T2.2", positions.stream().filter(x -> x.getInitials().equals("TC")).collect(Collectors.toSet()));
         Task t3 = new Task("T3", positions.stream().filter(x -> x.getInitials().equals("DM")).collect(Collectors.toSet()));
         Task t4 = new Task("T4", positions.stream().filter(x -> x.getInitials().equals("DE") || x.getInitials().equals("PS")).collect(Collectors.toSet()));
-        res.add(t1);
-        res.add(t21);
-        res.add(t22);
-        res.add(t3);
-        res.add(t4);
+        Set<Task> res = new HashSet<>(Arrays.asList(t1, t21, t22, t3, t4));
         return res;
     }
 
@@ -200,7 +188,6 @@ public class Auxiliar {
         if (positions == null || positions.isEmpty()) {
             positions = getAllPositions();
         }
-        Set<User> res = new HashSet<>();
         User jvg = new User("JVG", positions.stream().filter(x -> x.getInitials().equals("DG")).collect(Collectors.toSet()));
         User hyv = new User("HYV", positions.stream().filter(x -> x.getInitials().equals("DR") || x.getInitials().equals("TR")).collect(Collectors.toSet()));
         User pgr = new User("PGR", positions.stream().filter(x -> x.getInitials().equals("DM") || x.getInitials().equals("PS")).collect(Collectors.toSet()));
@@ -212,17 +199,7 @@ public class Auxiliar {
         User mds = new User("MDS", positions.stream().filter(x -> x.getInitials().equals("TC")).collect(Collectors.toSet()));
         User hjr = new User("HJR", positions.stream().filter(x -> x.getInitials().equals("PS")).collect(Collectors.toSet()));
         User ihp = new User("IHP", positions.stream().filter(x -> x.getInitials().equals("PS")).collect(Collectors.toSet()));
-        res.add(jvg);
-        res.add(hyv);
-        res.add(pgr);
-        res.add(mfe);
-        res.add(gtr);
-        res.add(lpg);
-        res.add(rgb);
-        res.add(bjc);
-        res.add(mds);
-        res.add(hjr);
-        res.add(ihp);
+        Set<User> res = new HashSet<>(Arrays.asList(jvg, hyv, pgr, mfe, gtr, lpg, rgb, bjc, mds, hjr, ihp));
         return res;
     }
 
