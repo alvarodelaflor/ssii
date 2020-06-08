@@ -232,16 +232,20 @@ public class Auxiliar {
         Set<User> users = getAllUsers(positions);
         Set<Task> tasks = getAllTasks(positions);
         Set<Map<Task, Set<User>>> result = new HashSet<>();
+        Set<Map<Task, Set<User>>> invalid = new HashSet<>();
         int count = 0;
         Boolean stop = true;
         while (stop) {
             Map<Task, Set<User>> aux = Auxiliar.getResult(tasks, users);
-            if (Auxiliar.validateResult(result, aux, positions)) {
+            if (Auxiliar.validateResult(result, aux, positions) && !invalid.contains(aux)) {
                 System.out.println("\n");
                 result.add(aux);
                 printResult(aux, String.valueOf(result.size()));
-            } else if (print) {
+            } else if (print && !invalid.contains(aux)) {
+                invalid.add(aux);
                 printResult(aux, "NO VALID");
+            } else {
+                invalid.add(aux);
             }
             if (printPercent) {
                 if (blindSearch) {
