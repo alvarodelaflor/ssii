@@ -80,13 +80,15 @@ public class Auxiliar {
             User user4 = result.get(t3).stream().findFirst().orElse(null);
             User user5 = result.get(t4).stream().collect(Collectors.toList()).get(0);
             User user6 = result.get(t4).stream().collect(Collectors.toList()).get(1);
-            Set<Position> check = new HashSet<>();
+            Set<String> check = new HashSet<>();
             Boolean checkResult = false;
-            check.addAll(user4.getPositions());
-            check.addAll(user5.getPositions());
-            check.addAll(user6.getPositions());
-            if (check.size() < 3) {
+            check.addAll(user4.getPositions().stream().map(Position::getInitials).collect(Collectors.toSet()));
+            check.addAll(user5.getPositions().stream().map(Position::getInitials).collect(Collectors.toSet()));
+            check.addAll(user6.getPositions().stream().map(Position::getInitials).collect(Collectors.toSet()));
+            if (user5.getPositions().stream().anyMatch(x -> x.getInitials().equals("PS")) && user6.getPositions().stream().anyMatch(x -> x.getInitials().equals("PS"))) {
                 checkResult = true;
+            } else {
+                checkResult = false;
             }
             if (user4.equals(user5) || user4.equals(user6) || user5.equals(user6) || checkResult) {
                 return false;
