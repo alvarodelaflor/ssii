@@ -66,7 +66,7 @@ public class Auxiliar {
         if (t21 != null && t22 != null) {
             User user2 = result.get(t21).stream().findFirst().orElse(null);
             User user3 = result.get(t22).stream().findFirst().orElse(null);
-            if (user2.equals(user3)) {
+            if (user2.equals(user3) || user2.getPositions().equals(user3.getPositions())) {
                 return false;
             }
         } else {
